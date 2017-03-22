@@ -1,0 +1,21 @@
+{
+	"id": "e6f07e19-c711-433c-bfb4-1eaa0e338757",
+	"fields": [
+		{
+			"name": "role",
+			"type": "text",
+			"read": true,
+			"write": true,
+			"primary": true,
+			"unique": true,
+			"required": true
+		},
+		{
+			"name": "description",
+			"type": "text",
+			"read": true,
+			"write": true
+		}
+	],
+	"name": "user_role"
+}

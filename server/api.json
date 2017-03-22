@@ -1,0 +1,68 @@
+[
+	{
+		"method": "post",
+		"url": "/user/signin",
+		"controller": "default",
+		"action": "signin",
+		"params": [
+			{
+				"name": "login",
+				"type": "text",
+				"required": true,
+				"component": "input"
+			},
+			{
+				"name": "password",
+				"type": "text",
+				"required": true,
+				"component": "password"
+			}
+
+		]
+	},
+	{
+		"method": "post",
+		"url": "/user/logout",
+		"controller": "default",
+		"action": "logout",
+		"permissions": [
+			"Authenticated"
+		]
+	},
+	{
+		"method": "get",
+		"url": "/user/me",
+		"controller": "default",
+		"action": "me",
+		"permissions": [
+			"Authenticated"
+		]
+	},
+	{
+		"method": "put",
+		"url": "/user/me",
+		"controller": "default",
+		"action": "safeUpdate",
+		"permissions": [
+			"Authenticated"
+		]
+	},
+	{
+		"method": "delete",
+		"url": "/user/me",
+		"controller": "default",
+		"action": "destroy",
+		"permissions": [
+			"Authenticated"
+		]
+	},
+	{
+		"method": "post",
+		"url": "/user/signup",
+		"controller": "default",
+		"action": "signup",
+		"permissions": [
+			"Anyone"
+		]
+	}
+]

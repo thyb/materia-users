@@ -1,0 +1,37 @@
+{
+	"id": "e05855cb-a080-43d5-afd1-c23b0ce3f641",
+	"fields": [
+		{
+			"name": "id_user",
+			"type": "number",
+			"primary": true,
+			"unique": true,
+			"required": true,
+			"autoIncrement": true,
+			"component": "input",
+			"read": true,
+			"write": false
+		},
+		{
+			"name": "status",
+			"type": "text",
+			"required": true,
+			"default": true,
+			"defaultValue": "unverified",
+			"component": "input",
+			"read": true,
+			"write": true
+		},
+		{
+			"name": "salt",
+			"type": "text",
+			"required": true,
+			"component": "input",
+			"read": true,
+			"write": true
+		}
+	],
+	"relations": [],
+	"queries": [
+	]
+}

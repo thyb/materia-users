@@ -1,0 +1,73 @@
+{
+	"id": "9d092fc7-f4ea-474b-b999-ed813cc23318",
+	"fields": [
+		{
+			"name": "id_user",
+			"type": "number",
+			"primary": true,
+			"unique": true,
+			"required": true,
+			"component": "input"
+		}, {
+			"name": "role",
+			"type": "text",
+			"primary": true,
+			"unique": true,
+			"required": true,
+			"component": "input"
+		}
+	],
+	"isRelation": [
+		{
+			"field": "id_user",
+			"entity": "user"
+		},
+		{
+			"field": "role",
+			"entity": "user_role"
+		}
+	],
+	"queries": [
+		{
+			"id": "getUserRoles",
+			"type": "findAll",
+			"params": [
+				{
+					"name": "id_user",
+					"type": "number",
+					"required": true
+				}
+			],
+			"opts": {
+				"conditions": [
+					{
+						"name": "id_user",
+						"operator": "=",
+						"value": "="
+					}
+				]
+			}
+		},
+		{
+			"id": "getRoleUsers",
+			"type": "findAll",
+			"params": [
+				{
+					"name": "role",
+					"type": "text",
+					"required": true
+				}
+			],
+			"opts": {
+				"conditions": [
+					{
+						"name": "role",
+						"operator": "=",
+						"value": "="
+					}
+				]
+			}
+		}
+	],
+	"name": "user_permission"
+}

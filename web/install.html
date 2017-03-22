@@ -1,0 +1,221 @@
+<div ng-cloak id="usermanagement-modal" ng-controller="UserManagementInstallCtrl" style="width:600px;">
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>User Management - Setup</h2>
+            <span flex></span>
+            <md-button class="md-icon-button" ng-click="cancel()">
+                <md-icon aria-label="Close dialog">close</md-icon>
+            </md-button>
+        </div>
+    </md-toolbar>
+
+    <md-dialog-content>
+        <div style="height: 42px;" layout-align="center center" layout="row">
+            <a class="step" ng-class="{'disabled': steps[0].disabled}" ng-click="selectStep(0)">
+                <span class="badge circle" ng-class="{'active': step == 0 || steps[0].completed}">
+                    <md-icon ng-if="steps[0].completed && step != 0">check</md-icon>
+                    <md-icon ng-if="steps[0].completed && step == 0">edit</md-icon>
+                    <span ng-if=" ! steps[0].completed">1</span>
+                </span>
+                Login
+            </a>
+            <span flex class="separator"></span>
+            <a class="step" ng-class="{'disabled': steps[1].disabled}" ng-click="selectStep(1)">
+                <span class="badge circle" ng-class="{'active': step == 1 || steps[1].completed}">
+                    <md-icon ng-if="steps[1].completed && step != 1">check</md-icon>
+                    <md-icon ng-if="steps[1].completed && step == 1">edit</md-icon>
+                    <span ng-if=" ! steps[1].completed">2</span>
+                </span>
+                User
+            </a>
+            <span flex class="separator"></span>
+            <a class="step" ng-class="{'disabled': steps[2].disabled}" ng-click="selectStep(2)">
+                <span class="badge circle" ng-class="{'active': step == 2 || steps[2].completed }">
+                    <md-icon ng-if="steps[2].completed && step != 2">check</md-icon>
+                    <md-icon ng-if="steps[2].completed && step == 2">edit</md-icon>
+                    <span ng-if=" ! steps[2].completed">3</span>
+                </span>
+                Emails
+            </a>
+        </div>
+        <md-tabs md-dynamic-height md-border-bottom md-selected="step">
+            <md-tab label="Login">
+                <md-content class="md-padding">
+                    <form name="step1Form" ng-submit="nextStep(step1Form)">
+                        <h3 style="padding-bottom: 0; margin-bottom: 0; margin-top: 10px" class="text-center">
+                            How your user should login ?
+                        </h3>
+                        <div layout="row" style="width: 400px; margin: 0 auto; padding: 0">
+                            <md-input-container flex>
+                                <label>Login type</label>
+                                <md-select required ng-model="setupConfig.type" name="type">
+                                    <md-option value="email">Email / Password</md-option>
+                                    <md-option value="username">Username / Password</md-option>
+                                    <md-option value="both">Email or Username / Password</md-option>
+                                </md-select>
+                            </md-input-container>
+                        </div>
+
+                        <h3 style="padding-bottom: 0; margin-bottom: 0; margin-top: 30px" class="text-center">
+                            Enter a key to encrypt user's password
+                        </h3>
+
+                        <div layout="row" style="width: 400px; margin: 0 auto; padding: 0">
+                            <md-input-container flex>
+                                <label>Static salt</label>
+                                <input required type="text" name="static_salt" ng-model="setupConfig.static_salt">
+                            </md-input-container>
+                        </div>
+
+
+                        <md-content layout-padding style="border-radius: 3px; text-align: center; margin: 10px auto 0; width: 400px" ng-show="error.status && error.step == 1"
+                            class="error">{{error.message}}</md-content>
+
+                        <div style="margin: 10px 0 0" flex layout="row" layout-align="center top">
+                            <md-button class="md-raised" ng-click="cancel()">Cancel</md-button>
+                            <md-button type="submit" class="md-raised md-primary">Continue</md-button>
+                        </div>
+                    </form>
+                </md-content>
+            </md-tab>
+
+            <md-tab label="User">
+                <md-content class="md-padding">
+                    <form layout="column" flex name="step2Form" ng-init="newField = false" ng-submit="nextStep(step2Form)">
+                        <h3 style="padding-bottom: 0; margin-bottom: 0; margin-top: 10px" class="text-center">
+                            Add extra fields to describe what is a user
+                        </h3>
+
+                        <fields-editor style="margin-top: 20px" fields="setupConfig.fields" type="setupConfig.type">
+                        </fields-editor>
+
+                        <div ng-if="error.status" class="error" style="padding: 10px 20px">
+                            Error: {{error.message}}
+                        </div>
+
+                        <div style="margin: 20px 0 0" flex layout="row" layout-align="center top">
+                            <md-button class="md-raised" ng-click="back()">Back</md-button>
+                            <md-button type="submit" class="md-raised md-primary">Continue</md-button>
+                        </div>
+                    </form>
+                </md-content>
+            </md-tab>
+            <md-tab label="Security">
+                <md-content class="md-padding">
+                    <form name="step3Form" ng-submit="nextStep(step3Form)">
+                        <h3 style="padding-bottom: 0; margin-bottom: 0; margin-top: 10px" class="text-center" ng-if="setupConfig.type == 'email' || setupConfig.type == 'both'">
+                            <md-checkbox ng-model="setupConfig.email_verification">Emails enabled</md-checkbox>
+                        </h3>
+                        <div layout="row" style="width: 400px; margin: 0 auto; padding: 10px 20px;">
+                            <md-input-container flex>
+                                <label>Entity</label>
+                                <md-select ng-disabled="!setupConfig.email_verification" ng-model="setupConfig.email_action.entity" name="email_entity">
+                                    <md-option ng-repeat="e in entities" ng-value="e">{{ e.name }}</md-option>
+                                </md-select>
+                            </md-input-container>
+                            <md-input-container flex>
+                                <label>Query</label>
+                                <md-select ng-disabled="!setupConfig.email_verification" ng-model="setupConfig.email_action.query" name="setupConfig.email_action.entity">
+                                    <md-option ng-repeat="q in getQueries()" ng-value="q">{{q.id}}</md-option>
+                                </md-select>
+                            </md-input-container>
+                        </div>
+                        <h3 style="padding-bottom: 0; margin-bottom: 0; margin-top: 30px" class="text-center" ng-if="setupConfig.type == 'email' || setupConfig.type == 'both'">
+                            Email templates
+                        </h3>
+                        <ul style="width: 400px; margin: 20px auto 0; padding: 0">
+                            <li>
+                                <span ng-click="accordeon[2] = accordeon[1] = false; accordeon[0] = ! accordeon[0]">
+                                    <md-icon>{{accordeon[0] ? 'keyboard_arrow_down' : 'keyboard_arrow_right'}}</md-icon> Signup
+                                </span>
+                                <div ng-show="accordeon[0]" layout="column" flex>
+                                    <div layout="row">
+                                        <md-input-container flex>
+                                            <label>Subject</label>
+                                            <input ng-disabled="!setupConfig.email_verification" type="text" ng-model="setupConfig.email_signup.subject">
+                                        </md-input-container>
+                                    </div>
+                                    <div layout="row">
+                                        <md-input-container flex>
+                                            <label>Message</label>
+                                            <textarea style="min-height: 120px;" ng-disabled="!setupConfig.email_verification" ng-model="setupConfig.email_signup.message"></textarea>
+                                        </md-input-container>
+                                    </div>
+                                    <p><small>Available variables: <strong>[redirect_url]</strong>, <strong>[user.*]</strong> (e.g. [user.email])</small></p>
+                                    <div layout="row">
+                                        <md-input-container flex>
+                                            <label>Redirect URL</label>
+                                            <input ng-disabled="!setupConfig.email_verification" ng-model="setupConfig.email_signup.redirect_url"></textarea>
+                                        </md-input-container>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <span ng-click="accordeon[0] = accordeon[2] = false; accordeon[1] = ! accordeon[1]">
+                                    <md-icon>{{accordeon[1] ? 'keyboard_arrow_down' : 'keyboard_arrow_right'}}</md-icon> Lost password
+                                </span>
+                                <div ng-show="accordeon[1]" layout="column" flex>
+                                    <div layout="row">
+                                        <md-input-container flex>
+                                            <label>Subject</label>
+                                            <input ng-disabled="!setupConfig.email_verification" type="text" ng-model="setupConfig.email_lost_password.subject">
+                                        </md-input-container>
+                                    </div>
+                                    <div layout="row">
+                                        <md-input-container flex>
+                                            <label>Message</label>
+                                            <textarea style="min-height: 120px;" ng-disabled="!setupConfig.email_verification" ng-model="setupConfig.email_lost_password.message"></textarea>
+                                        </md-input-container>
+                                    </div>
+                                    <p><small>Available variable: <strong>[redirect_url]</strong>, <strong>[user.*] (e.g. user.email)</strong></small></p>
+                                    <div layout="row">
+                                        <md-input-container flex>
+                                            <label>Redirect URL</label>
+                                            <input ng-disabled="!setupConfig.email_verification" ng-model="setupConfig.email_lost_password.redirect_url"></textarea>
+                                        </md-input-container>
+                                    </div>
+                                </div>
+                            </li>
+
+                            <li>
+                                <span style="cursor: pointer; " ng-click="accordeon[0] = accordeon[1] = false; accordeon[2] = ! accordeon[2]">
+                                    <md-icon>{{accordeon[2] ? 'keyboard_arrow_down' : 'keyboard_arrow_right'}}</md-icon> Change email
+                                </span>
+                                <div ng-show="accordeon[2]" layout="column" flex>
+                                    <div layout="row">
+                                        <md-input-container flex>
+                                            <label>Subject</label>
+                                            <input ng-disabled="!setupConfig.email_verification" type="text" ng-model="setupConfig.email_change_email.subject">
+                                        </md-input-container>
+                                    </div>
+                                    <div layout="row">
+                                        <md-input-container flex>
+                                            <label>Message</label>
+                                            <textarea style="min-height: 120px;" ng-disabled="!setupConfig.email_verification" ng-model="setupConfig.email_change_email.message"></textarea>
+                                        </md-input-container>
+                                    </div>
+                                    <p><small>Available variable: <strong>[redirect_url]</strong>, <strong>[user.*] (e.g. user.email)</strong></small></p>
+                                    <div layout="row">
+                                        <md-input-container flex>
+                                            <label>Redirect URL</label>
+                                            <input ng-disabled="!setupConfig.email_verification" ng-model="setupConfig.email_change_email.redirect_url"></textarea>
+                                        </md-input-container>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                        <div ng-if="error.status" class="error" style="margin-top: 20px; padding: 10px 20px">
+                            Error: {{error.message}}
+                        </div>
+
+
+                        <div style="margin: 10px 0 0" flex layout="row" layout-align="center top">
+                            <md-button class="md-raised" ng-click="back()">Back</md-button>
+                            <md-button type="submit" class="md-raised md-primary">Finish</md-button>
+                        </div>
+                    </form>
+                </md-content>
+            </md-tab>
+        </md-tabs>
+    </md-dialog-content>
+</div>

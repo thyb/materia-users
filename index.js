@@ -9,7 +9,9 @@ class UserManagement {
         this.app = app
         this.config = config
         //express.use(flash());
-        console.log('addon constructor')
+        if ( ! this.config || ! this.config.type ) {
+            this.disabled = true
+        }
         express.use(passport.initialize());
         express.use(passport.session());
     }
@@ -21,7 +23,8 @@ class UserManagement {
     getInstallCtrl() { return "UserManagementInstallCtrl" }
 
     afterLoadEntities() {
-        console.log('after loading entities')
+        if ( this.disabled ) { return Promise.resolve() }
+
         let userEntity = this.app.entities.get('user')
         let res = []
         this.options = {
@@ -130,6 +133,8 @@ class UserManagement {
     }
 
     afterLoadQueries() {
+        if ( this.disabled ) { return Promise.resolve() }
+
         console.log('after load queries....');
         let userEntity = this.app.entities.get('user')
 
@@ -189,6 +194,8 @@ class UserManagement {
     }
 
     afterLoadAPI() {
+        if ( this.disabled ) { return Promise.resolve() }
+
         console.log('after load API....');
         let res = []
         
@@ -258,6 +265,8 @@ class UserManagement {
     }
 
     start() {
+        if ( this.disabled ) { return Promise.resolve() }
+
         passport.use(new LocalStrategy({
             usernameField: 'login',
             passwordField: 'password'

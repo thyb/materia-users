@@ -7,14 +7,28 @@
 			"primary": true,
 			"unique": true,
 			"required": true,
-			"component": "input"
+			"component": "input",
+			"isRelation": {
+				"type": "belongsTo",
+				"reference": {
+					"entity": "user",
+					"field": "id_user"
+				}
+			}
 		}, {
 			"name": "role",
 			"type": "text",
 			"primary": true,
 			"unique": true,
 			"required": true,
-			"component": "input"
+			"component": "input",
+			"isRelation": {
+				"type": "belongsTo",
+				"reference": {
+					"entity": "user_role",
+					"field": "role"
+				}
+			}
 		}
 	],
 	"isRelation": [

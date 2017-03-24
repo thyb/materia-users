@@ -19,15 +19,6 @@ class UserModel {
 		return message
 	}
 
-	_getDomain() {
-		let link = `http://${this.app.server.host}`
-		if (this.app.server.port != 80) {
-			link += `:${this.app.server.port}`
-		}
-		link += `/`
-		return link
-	}
-
 	_generateKey() {
 		return md5(Math.random()).substr(0, 8)
 	}
@@ -55,7 +46,7 @@ class UserModel {
 
 		if (this.config.email_verification && (this.config.type == 'email' || this.config.type == 'both')) {
 			console.log('sendVerifyEmail')
-			return userEntity.getQuery('get').run(params).then(user => {
+			return userEntity.getQuery('get').run(params, {raw: true}).then(user => {
 				console.log(user)
 				let verify_url = `${this.app.server.getBaseUrl()}/user/verify/${user.id_user}/${user.key_email}`
 				let message = this._translate(this.config.email_signup.message, user, verify_url)
@@ -109,37 +100,87 @@ class UserModel {
 		})
 	}
 
-	lostPasswordVerify(params) {
-		let key = this._generateKey()
-
-		let link = this.app.server.getBaseUrl()
-		link += `/user/lost-password/${params.email}/${key}`
-
-		if (this.config.email_verification && (this.config.type == 'email' || this.config.type == 'both')) {			
-			return this.app.entities.get('user').getQuery('getByEmail').run({
-				email: params.email
-			}).then(response => {
-				let user = response.data
-
-				return this.app.entities.get('user').getQuery('update').run({
-					key_password: key,
-					id_user: user.id_user
-				}).then(() => user)
-			}).then(user => {
-				let subject = this._translate(this.config.email_lostpassword.subject, user)
-				let message = this._translate(this.config.email_lostpassword.message, user)
-
-				//send the email
-				return this.app.entities.get(this.config.email_action.entity).getQuery(this.config.email_action.query).run({
-					to: params.email,
-					subject: subject,
-					body: message
-				})
-			}).then(() => true)
+	_buildRedirectUri(redirect_url, params) {
+        let newUrl = redirect_url
+		if (newUrl.substr(0, 1) == '/') {
+			newUrl = this.app.server.getBaseUrl('/')
+			newUrl = newUrl.substr(0, newUrl.length - 1) + redirect_url
+		}
+		if (newUrl.split('?').length > 1) {
+			newUrl += '&'
 		}
 		else {
-			return Promise.reject("Impossible to run lost password. Email disabled")
+			newUrl += '?'
 		}
+		Object.keys(params).forEach((p, index) => {
+			newUrl += p + '=' + params[p]
+			if (index + 1 < Object.keys(params).length) {
+				newUrl += '&'
+			}
+		})
+        return newUrl
+
+	}
+
+	_execLostPassword(user) {
+		let key = this._generateKey()
+
+		return this.app.entities.get('user').getQuery('update').run({
+			key_password: key,
+			id_user: user.id_user
+		}).then(() => {
+			let redirect_url = this._buildRedirectUri(this.config.email_lost_password.redirect_url, {
+				id_user: user.id_user,
+				key: key
+			})
+			let subject = this._translate(this.config.email_lost_password.subject, user, redirect_url)
+			let message = this._translate(this.config.email_lost_password.message, user, redirect_url)
+
+			//send the email
+			return this.app.entities.get(this.config.email_action.entity).getQuery(this.config.email_action.query).run({
+				to: user.email,
+				subject: subject,
+				body: message
+			})
+		})
+	}
+
+	/**
+	 * 
+	 * @param {*} params 
+	 */
+	lostPassword(params) {
+		if ( ! this.config.email_verification) {
+			return Promise.reject('Email verification not configured - Lost password functionality disabled');
+		}
+		let userPromise = Promise.resolve();
+		if (this.config.type == 'email' || this.config.type == 'both') {
+			userPromise = this.app.entities.get('user').getQuery('getByEmail').run({
+				email: params.login
+			}, {raw:true})
+		}
+		return userPromise.then(user => {
+			if (user) {
+				return this._execLostPassword(user)
+			}
+			else {
+				if (this.config.type == 'both') {
+					return this.app.entities.get('user').getQuery('getByUsername').run({
+						username: params.login
+					}, {raw: true})
+				}
+				else {
+					return Promise.reject('Invalid login')
+				}
+			}
+		})
+		.then(user => {
+			if (user) {
+				this._execLostPassword(user)
+			}
+			else { return Promise.reject('Invalid login') }
+		})
+		.then(() => { return {emailSent: true } })
 	}
 }
 module.exports = UserModel;

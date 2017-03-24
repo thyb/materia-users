@@ -48,10 +48,40 @@
 		]
 	},
 	{
+		"method": "put",
+		"url": "/user/me/password",
+		"controller": "default",
+		"action": "changePassword",
+		"params": [
+			{
+				"name": "new_password",
+				"type": "text",
+				"required": true
+			}, {
+				"name": "old_password",
+				"type": "text",
+				"required": false
+			}, {
+				"name": "key",
+				"type": "text",
+				"required": false
+			}, {
+				"name": "id_user",
+				"type": "number",
+				"required": false
+			}
+		]
+	},
+	{
 		"method": "delete",
 		"url": "/user/me",
 		"controller": "default",
 		"action": "destroy",
+		"params": [{
+			"name": "login",
+			"type": "text",
+			"required": "true"
+		}],
 		"permissions": [
 			"Authenticated"
 		]

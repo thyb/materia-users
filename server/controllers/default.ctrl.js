@@ -1,23 +1,73 @@
+const md5 = require('md5')
+
 class DefaultCtrl {
-	constructor(app) { this.app = app; }
+	constructor(app) { 
+		this.app = app; 
+		this.config = this.app.addons.addonsConfig['@materia/users']
+	}
+
+	_generateKey() {
+		return md5(Math.random()).substr(0, 8)
+	}
 
 	me(req, res, next) {
-		let module={};
-		module.exports = (req, app) => {
-		    return Promise.resolve(req.user)
+		return this.app.entities.get('user').getQuery('get').run({
+			id_user: req.user.id_user
+		}, { raw: true }).then(user => {
+			delete user.password
+			if (user.key_email !== undefined) {
+				delete user.key_email
+			}
+			if (user.key_password !== undefined) {
+				delete user.key_password
+			}
+			if (user.new_email !== undefined && user.new_email === null) {
+				delete user.new_email
+			}
+			delete user.salt
+			return user
+		})
+	}
+
+	destroy(req, res, next) {
+		let params = Object.assign({}, req.body, req.params, req.query)
+		let valid = false
+		if (this.config.type == 'email' || this.config.type == 'both') {
+			if (req.user.email == params.login) {
+				valid = true
+			}
+			else {
+				return Promise.reject('confirmation failed')
+			}
 		}
-		return Promise.resolve(module.exports(req, this.app, res));
+		else if (this.config.type == 'username' || this.config.type == 'both') {
+			if (req.user.username == params.login) {
+				valid = true
+			}
+			else {
+				return Promise.reject('confirmation failed');
+			}
+		}
+		if (valid) {
+			return this.app.entities.get('user').getQuery('delete').run({
+				id_user: req.user.id_user
+			}).then(() => {
+				req.logout()
+				return {
+					removed: true
+				}
+			})
+		}
+
+
 	}
 
 	signin(req, res, next) {
 		var passport = require('passport')
-		console.log('signin endpoint')
 		return new Promise((resolve, reject) => {
 			passport.authenticate('local', function(err, user, info) {
-				console.log(err, user)
 				if (err) { return reject(err) }
 				if (!user) { return reject(new Error('bad credentials')) }
-				console.log('resolve')
 				req.logIn(user, function(err) {
 					if (err) { return reject(err); }
 					return resolve(user)
@@ -41,28 +91,28 @@ class DefaultCtrl {
 		return Promise.resolve()
 	}
 
-	destroy(req, res, next) {
-		if (req.user && req.user.id_user) {
-			user.getQuery('delete').run({
-				id_user: req.user.id_user
-			})
-			req.logout()
-			return Promise.resolve()
-		}
-		else {
-			return Promise.reject('Not authorized')
-		}
-	}
-
 	//Params: new_email
 	changeEmail(req, res, next) {
 		let params = Object.assign({}, req.query, req.body)
-		let userEntity = app.entities.get('user')
+		let userEntity = this.app.entities.get('user')
 
 		if (req.user && req.user.email) {
+			let key = this._generateKey()
 			return userEntity.getQuery('update').run({
 				id_user: req.user.id_user,
-				new_email: params.new_email
+				new_email: params.new_email,
+				key_email: key
+			}).then(() => {
+				if (this.config.email_verification && (this.config.type == 'email' || this.config.type == 'both')) {
+					return userEntity.getQuery('sendVerificationEmail').run({
+						id_user: req.user.id_user
+					}).then(() => {
+						return { changed: true, verificationEmail: true }
+					})
+				}
+				else {
+					return Promise.resolve({changed: true, verificationEmail: false})
+				}
 			}).then(() => {
 				req.user.new_email = params.new_email
 			})
@@ -71,53 +121,71 @@ class DefaultCtrl {
 
 	//Params: key & new_password || old_password & new_password
 	changePassword(req, res, next) {
-		let params = Object.assign({}, req.query, req.body)
-		let userEntity = app.entities.get('user')
+		let params = Object.assign({}, req.query, req.body, req.query)
+		let userEntity = this.app.entities.get('user')
 
 		//lost password
-		if (params.key && params.new_password && this.config.email_verification && (this.config.type == 'email' || this.config.type == 'both')) {
-			return userEntity.getQuery('getByEmail').run({
-				email: params.email
-			}).then(response => {
-				let user = response.data
-
+		if (params.key && params.id_user && params.new_password && this.config.email_verification && (this.config.type == 'email' || this.config.type == 'both')) {
+			return userEntity.getQuery('get').run({
+				id_user: params.id_user
+			}, {raw: true}).then(user => {
 				if (user.key_password == params.key) {
+					let newPasswordEncrypted = md5(this.config.static_salt + params.new_password + user.salt)
 					return userEntity.getQuery('update').run({
-						password: params.new_password,
+						password: newPasswordEncrypted,
 						key_password: null,
 						id_user: user.id_user
-					})
+					}).then(() => user)
 				}
 				else return Promise.reject('key does not match')
+			}).then(user => {
+				req.body.login = user.email || user.username
+				req.body.password = params.new_password
+				return this.signin(req, res, next)
 			})
 		}
 		//regular change password (once logged in)
 		else {
-			if (req.user && params.old_password && params.new_password) {
-				let staticSalt = this.config.staticSalt
+			if (params.old_password && params.new_password) {
+				if ( ! req.user || ! req.user.id_user ) {
+					return res.status(401).send({
+						error: true,
+						message: 'Unauthorized call.'
+					})
+				}
+				let staticSalt = this.config.static_salt
 
-				return userEntity.getQuery('getByEmail').run({
-					email: req.user.email
-				}).then(response => {
-					let user = response.data
-
+				return userEntity.getQuery('get').run({
+					id_user: req.user.id_user
+				}, { raw: true }).then(user => {
 					let encryptedOldPassword = md5(staticSalt + params.old_password + user.salt)
 					let encryptedNewPassword = md5(staticSalt + params.new_password + user.salt)
 
 					if (user.password == encryptedOldPassword) {
 						return userEntity.getQuery('update').run({
-							id_user: user.id_user,
+							id_user: req.user.id_user,
 							password: encryptedNewPassword,
 							key_password: null
-						})
+						}).then(() => user)
 					}
 					else {
-						return Promise.reject('old password does not match')
+						return res.status(500).send({
+							error: true,
+							message: 'old password does not match'
+						})
 					}
+				}).then(user => {
+					req.body.login = user.email || user.username
+					req.body.password = params.new_password
+					return this.signin(req, res, next)
 				})
 			}
 			else {
-				return Promise.reject('Missing required parameter')
+				return res.status(500).send({
+					error: true,
+					message: 'Missing required parameter'
+				})
+				return Promise.reject()
 			}
 		}
 	}
@@ -141,9 +209,7 @@ class DefaultCtrl {
 
 	verifyEmail(req, res, next) {
 		let params = Object.assign({}, req.query, req.body, req.params)
-		console.log('verify email', params)
 		return this.app.entities.get('user').getQuery('verifyEmail').run(params).then(redirect => {
-			console.log('after verify', redirect)
 			res.redirect(redirect)
 			return Promise.resolve()
 		})

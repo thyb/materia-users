@@ -62,14 +62,6 @@ class UserManagement {
                     write: true
                 }, this.options))
 
-                res.push(userEntity.addField({
-                    name: "key_password",
-                    type: "text",
-                    required: false,
-                    component: "input",
-                    read: true,
-                    write: true
-                }, this.options))
             }
             this.signupParams.push({
                 name: 'email',
@@ -108,6 +100,16 @@ class UserManagement {
             required: true,
             component: 'password'
         })
+        if (this.config.email_verification) {
+            res.push(userEntity.addField({
+                name: "key_password",
+                type: "text",
+                required: false,
+                component: "input",
+                read: true,
+                write: true
+            }, this.options))
+        }
 
         if (this.config.fields.length) {
             this.config.fields.forEach(field => {
@@ -144,6 +146,19 @@ class UserManagement {
             opts: {
                 params: this.signupParams,
                 action: 'signup'
+            }
+        }, this.options)
+
+        userEntity.addQuery({
+            id: 'lostPassword',
+            type: 'custom',
+            opts: {
+                params: [{
+                    name: 'login',
+                    type: 'text',
+                    required: true
+                }],
+                action: 'lostPassword'
             }
         }, this.options)
 
@@ -190,7 +205,20 @@ class UserManagement {
                 }
             }, this.options)
         }
-        return Promise.resolve()                    
+        if (this.config.type == 'username' || this.config.type == 'both') {
+            userEntity.addQuery({
+                id: 'getByUsername',
+                type: 'findOne',
+                opts: {
+                    conditions: [{
+                        name: 'username',
+                        operator: '=',
+                        value: '='
+                    }]
+                }
+            }, this.options)
+        }
+        return Promise.resolve()
     }
 
     afterLoadAPI() {
@@ -243,22 +271,39 @@ class UserManagement {
                 fromAddon: this.app.addons.get('@materia/users')
             }, this.options)
 
-            this.app.api.add({
-                method: 'get',
-                url: '/user/verify/:id_user/:key_email',
-                params: [{
-                    name: 'id_user',
-                    type: 'number',
-                    required: true
-                }, {
-                    name: 'key_email',
-                    type: 'text',
-                    required: true
-                }],
-                controller: 'default',
-                action: 'verifyEmail',
-                fromAddon: this.app.addons.get('@materia/users')
-            })
+            if (this.config.email_verification) {
+                this.app.api.add({
+                    method: 'get',
+                    url: '/user/verify/:id_user/:key_email',
+                    params: [{
+                        name: 'id_user',
+                        type: 'number',
+                        required: true
+                    }, {
+                        name: 'key_email',
+                        type: 'text',
+                        required: true
+                    }],
+                    controller: 'default',
+                    action: 'verifyEmail',
+                    fromAddon: this.app.addons.get('@materia/users')
+                }, this.options)
+
+                this.app.api.add({
+                    method: 'post',
+                    url: '/user/lost_password',
+                    params: [{
+                        name: 'login',
+                        type: 'text',
+                        required: true
+                    }],
+                    query: {
+                        entity: 'user',
+                        id: 'lostPassword'
+                    },
+                    fromAddon: this.app.addons.get('@materia/users')
+                }, this.options)
+            }
         }
 
         return Promise.all(res).then(() => true)

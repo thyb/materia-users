@@ -162,7 +162,7 @@ class UserManagement {
             }
         }, this.options)
 
-        if (this.config.type == 'email' || this.conf.type == 'both') {
+        if (this.config.type == 'email' || this.config.type == 'both') {
             userEntity.addQuery({
                 id: 'getByEmail',
                 type: 'findOne',

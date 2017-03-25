@@ -13,7 +13,6 @@ let um = angular.module('user-management', [
 })
 .controller('UserManagementCtrl', ($scope, $rootScope, QueryService) => {
     $rootScope.app.entities.get('user').getQuery('list').run().then(users => {
-        console.log('users', users)
         $scope.users = users.rows
         $scope.$apply()
     }).catch(e => {
@@ -167,17 +166,19 @@ let um = angular.module('user-management', [
         }
         else if ($scope.step == 2) {
             //reduce the config of email verification by setting up only the entity name and the query id
-            if ($scope.setupConfig.email_verification && $scope.setupConfig.email_action && $scope.setupConfig.email_action.query && $scope.setupConfig.email_action.entity) {
-                $scope.setupConfig.email_action.entity = $scope.setupConfig.email_action.entity.name
-                $scope.setupConfig.email_action.query = $scope.setupConfig.email_action.query.id
-            }
-            else {
-                $scope.error = {
-                    status: true,
-                    message: "When the email verification enabled, you have to fill the entity which handle emails (mailjet or sendgrid addon)"
+            if ($scope.setup.email_verification) {
+                if ($scope.setupConfig.email_action && $scope.setupConfig.email_action.query && $scope.setupConfig.email_action.entity) {
+                    $scope.setupConfig.email_action.entity = $scope.setupConfig.email_action.entity.name
+                    $scope.setupConfig.email_action.query = $scope.setupConfig.email_action.query.id
                 }
+                else {
+                    $scope.error = {
+                        status: true,
+                        message: "When the email verification enabled, you have to fill the entity which handle emails (mailjet or sendgrid addon)"
+                    }
+                }
+                if ($scope.error.status) {return false}
             }
-            if ($scope.error.status) {return false}
 
             //remove disabled fields for the JSON file (deduced by the type)
             let toRemove = []

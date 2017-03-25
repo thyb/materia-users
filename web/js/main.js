@@ -53,13 +53,16 @@ let um = angular.module('user-management', [
         if ($rootScope.app.addons.addonsConfig['@materia/users']) {
             console.log('loading from config')
 
+            //copy config to not alter addonsConfig without clicking on save
             $scope.setupConfig = JSON.parse(JSON.stringify($rootScope.app.addons.addonsConfig['@materia/users']))
 
-            $scope.setupConfig.email_action.entity = $rootScope.app.entities.get($scope.setupConfig.email_action.entity)
-            if ( $scope.setupConfig.email_action.entity ) {
-                $scope.setupConfig.email_action.query = $scope.setupConfig.email_action.entity.getQuery($scope.setupConfig.email_action.query)
+            if ($scope.setupConfig.email_action) {
+                $scope.setupConfig.email_action.entity = $rootScope.app.entities.get($scope.setupConfig.email_action.entity)
+                if ( $scope.setupConfig.email_action.entity ) {
+                    $scope.setupConfig.email_action.query = $scope.setupConfig.email_action.entity.getQuery($scope.setupConfig.email_action.query)
+                }
             }
-            //$scope.initFields = $scope.setupConfig.fields
+            
             $scope.steps = [
                 { //login type
                     completed: true,

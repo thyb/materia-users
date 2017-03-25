@@ -92,31 +92,50 @@ class DefaultCtrl {
 	}
 
 	//Params: new_email
+	//authenticated && type == (email | both)
 	changeEmail(req, res, next) {
 		let params = Object.assign({}, req.query, req.body)
 		let userEntity = this.app.entities.get('user')
 
-		if (req.user && req.user.email) {
-			let key = this._generateKey()
+		let key = this._generateKey()
+
+		if (this.config.email_verification) {
 			return userEntity.getQuery('update').run({
 				id_user: req.user.id_user,
 				new_email: params.new_email,
 				key_email: key
 			}).then(() => {
-				if (this.config.email_verification && (this.config.type == 'email' || this.config.type == 'both')) {
-					return userEntity.getQuery('sendVerificationEmail').run({
-						id_user: req.user.id_user
-					}).then(() => {
-						return { changed: true, verificationEmail: true }
-					})
-				}
-				else {
-					return Promise.resolve({changed: true, verificationEmail: false})
-				}
-			}).then(() => {
-				req.user.new_email = params.new_email
+				return userEntity.getQuery('sendVerificationEmail').run({
+					id_user: req.user.id_user
+				}).then(() => {
+					req.user.new_email = params.new_email
+					return Promise.resolve({ changed: true, verificationEmail: true })
+				})
 			})
 		}
+		else {
+			return userEntity.getQuery('update').run({
+				id_user: req.user.id_user,
+				email: params.new_email
+			}).then(() => {
+				req.user.email = params.new_email
+				return Promise.resolve({changed: true, verificationEmail: false})
+			})
+		}
+	}
+
+	//Params: new_username
+	//authenticated && type == (username | both)
+	changeUsername(req, res, next) {
+		let params = Object.assign({}, req.query, req.body)
+		let userEntity = this.app.entities.get('user')
+		return userEntity.getQuery('update').run({
+			id_user: req.user.id_user,
+			username: params.new_username
+		}).then(() => {
+			req.user.username = params.new_username
+			return Promise.resolve({changed: true})
+		})
 	}
 
 	//Params: key & new_password || old_password & new_password
@@ -200,7 +219,10 @@ class DefaultCtrl {
 				}
 			})
 
-			return this.app.entities.get('user').getQuery('update').run(updates);
+			return this.app.entities.get('user').getQuery('update').run(updates)
+				.then(() => {
+					return { changed: true }
+				});
 		}
 		else {
 			return Promise.reject('unauthorized');

@@ -46,6 +46,17 @@ class UserManagement {
             //new_email - updated email during verification process
             if (this.config.email_verification) {
                 res.push(userEntity.addField({
+                    name: "verified",
+                    type: "boolean",
+                    required: true,
+                    default: true,
+                    defaultValue: false,
+                    component: "input",
+                    read: true,
+                    write: true
+                }, this.options))
+
+                res.push(userEntity.addField({
                     name: 'new_email',
                     type: 'text',
                     required: false,
@@ -149,19 +160,6 @@ class UserManagement {
             }
         }, this.options)
 
-        userEntity.addQuery({
-            id: 'lostPassword',
-            type: 'custom',
-            opts: {
-                params: [{
-                    name: 'login',
-                    type: 'text',
-                    required: true
-                }],
-                action: 'lostPassword'
-            }
-        }, this.options)
-
         if (this.config.type == 'email' || this.config.type == 'both') {
             userEntity.addQuery({
                 id: 'getByEmail',
@@ -175,35 +173,50 @@ class UserManagement {
                 }
             }, this.options)
 
-            userEntity.addQuery({
-                id: 'verifyEmail',
-                type: 'custom',
-                opts: {
-                    params: [{
-                        name: 'id_user',
-                        type: 'text',
-                        required: true
-                    },{
-                        name: 'key_email',
-                        type: 'text',
-                        required: true
-                    }],
-                    action: 'verifyEmail'
-                }
-            }, this.options)
+            if (this.config.email_verification) {
+                userEntity.addQuery({
+                    id: 'lostPassword',
+                    type: 'custom',
+                    opts: {
+                        params: [{
+                            name: 'login',
+                            type: 'text',
+                            required: true
+                        }],
+                        action: 'lostPassword'
+                    }
+                }, this.options)
 
-            userEntity.addQuery({
-                id: 'sendVerificationEmail',
-                type: 'custom',
-                opts: {
-                    params: [{
-                        name: 'id_user',
-                        type: 'number',
-                        required: true
-                    }],
-                    action: 'sendVerificationEmail'
-                }
-            }, this.options)
+                userEntity.addQuery({
+                    id: 'verifyEmail',
+                    type: 'custom',
+                    opts: {
+                        params: [{
+                            name: 'id_user',
+                            type: 'text',
+                            required: true
+                        },{
+                            name: 'key_email',
+                            type: 'text',
+                            required: true
+                        }],
+                        action: 'verifyEmail'
+                    }
+                }, this.options)
+
+                userEntity.addQuery({
+                    id: 'sendVerificationEmail',
+                    type: 'custom',
+                    opts: {
+                        params: [{
+                            name: 'id_user',
+                            type: 'number',
+                            required: true
+                        }],
+                        action: 'sendVerificationEmail'
+                    }
+                }, this.options)
+            }
         }
         if (this.config.type == 'username' || this.config.type == 'both') {
             userEntity.addQuery({
@@ -245,7 +258,7 @@ class UserManagement {
                 component: param.component
             })
 
-            if (param.name != 'email' && param.name != 'password') {
+            if (param.name != 'email' && param.name != 'password' && param.name != 'username') {
                 putMeEndpoint.params.push({
                     name: param.name,
                     type: param.type,
@@ -305,7 +318,21 @@ class UserManagement {
                 }, this.options)
             }
         }
-
+        if (this.config.type == 'username' || this.config.type == 'both') {
+            this.app.api.add({
+                method: 'put',
+                url: '/user/me/username',
+                params: [{
+                    name: 'new_username',
+                    type: 'text',
+                    required: true
+                }],
+                controller: 'default',
+                action: 'changeUsername',
+                permissions: ['Authenticated'],
+                fromAddon: this.app.addons.get('@materia/users')
+            }, this.options)            
+        }
         return Promise.all(res).then(() => true)
     }
 

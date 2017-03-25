@@ -13,16 +13,6 @@
 			"write": false
 		},
 		{
-			"name": "status",
-			"type": "text",
-			"required": true,
-			"default": true,
-			"defaultValue": "unverified",
-			"component": "input",
-			"read": true,
-			"write": true
-		},
-		{
 			"name": "salt",
 			"type": "text",
 			"required": true,

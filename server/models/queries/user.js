@@ -11,7 +11,7 @@ class UserModel {
 	_translate(message, user, redirect_url) {
 		message = message.replace(new RegExp(`\\[redirect_url\\]`, 'gi'), redirect_url)
 		this.app.entities.get('user').getFields().forEach(field => {
-			if (field.name != 'password' && field.name != 'salt' && field.name != 'key' && field.name != 'status') {
+			if (field.name != 'password' && field.name != 'salt' && field.name != 'key' && field.name != 'verified') {
 				let e = new RegExp(`\\[user.${field.name}\\]`, 'gi')
 				message = message.replace(e, user[field.name])
 			}
@@ -74,9 +74,9 @@ class UserModel {
 			id_user: params.id_user
 		}, {raw: true}).then(user => {
 			let isSignup = true
-			if (user.key_email == params.key_email && (user.status == 'unverified' || user.new_email)) {
+			if (user.key_email == params.key_email && ( ! user.verified || user.new_email)) {
 				let updates = {
-					status: 'verified',
+					verified: true,
 					key_email: null,
 					id_user: user.id_user
 				}
@@ -96,7 +96,7 @@ class UserModel {
 					}
 				})
 			}
-			else return Promise.reject('User email found but the key / status mismatch.')
+			else return Promise.reject('User email found but the key mismatch.')
 		})
 	}
 

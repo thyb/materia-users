@@ -1,6 +1,6 @@
 {
   "name": "@materia/users",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Manage your users and permissions in your application",
   "main": "index.js",
   "keywords": [

@@ -40,7 +40,6 @@ let um = angular.module('user-management', [
 
 
     function init() {
-        console.log('initialize controller @materia/users')
         $scope.entities = $rootScope.app.entities.findAll()
         $scope.newField = false
         $scope.step = 0
@@ -51,8 +50,6 @@ let um = angular.module('user-management', [
 
         //if configuration already exists => load config to edit
         if ($rootScope.app.addons.addonsConfig['@materia/users']) {
-            console.log('loading from config')
-
             //copy config to not alter addonsConfig without clicking on save
             $scope.setupConfig = JSON.parse(JSON.stringify($rootScope.app.addons.addonsConfig['@materia/users']))
 
@@ -100,7 +97,6 @@ let um = angular.module('user-management', [
                 }
             ]
         }
-        console.log($scope.setupConfig);
     }
     init()
 
@@ -132,7 +128,6 @@ let um = angular.module('user-management', [
     //create fields (email / username / password) depending on the login type
 
     $scope.nextStep = (form) => {
-        console.log('next')
         $scope.error = {
             status: false
         }
@@ -144,7 +139,6 @@ let um = angular.module('user-management', [
             console.log('invalid form:', form.$invalid, form)
             return false
         }
-        console.log('valid form')
         if ($scope.step == 0) {
             $scope.steps[0].completed = true
             $scope.steps[1].disabled = false
@@ -169,20 +163,32 @@ let um = angular.module('user-management', [
         }
         else if ($scope.step == 2) {
             //reduce the config of email verification by setting up only the entity name and the query id
-            if ($scope.setup.email_verification) {
+            if ($scope.setupConfig.email_verification) {
                 if ($scope.setupConfig.email_action && $scope.setupConfig.email_action.query && $scope.setupConfig.email_action.entity) {
-                    $scope.setupConfig.email_action.entity = $scope.setupConfig.email_action.entity.name
-                    $scope.setupConfig.email_action.query = $scope.setupConfig.email_action.query.id
+                    if ($scope.setupConfig.email_action.entity.getField($scope.setupConfig.email_action.query.id)) {
+                        $scope.setupConfig.email_action.entity = $scope.setupConfig.email_action.entity.name
+                        $scope.setupConfig.email_action.query = $scope.setupConfig.email_action.query.id
+                    }
+                    else {
+                        $scope.error = {
+                            status: true,
+                            message: "When the email verification enabled, you have to select the entity/query to send an email (Mailjet or Sendgrid addon)"
+                        }
+                    }
                 }
                 else {
                     $scope.error = {
                         status: true,
-                        message: "When the email verification enabled, you have to fill the entity which handle emails (mailjet or sendgrid addon)"
+                        message: "When the email verification enabled, you have to select the entity/query which handle emails (mailjet or sendgrid addon)"
                     }
                 }
                 if ($scope.error.status) {return false}
             }
-
+            else {
+                if ($scope.setupConfig.email_action) {
+                    delete $scope.setupConfig.email_action
+                }
+            }
             //remove disabled fields for the JSON file (deduced by the type)
             let toRemove = []
             $scope.setupConfig.fields.forEach((field, i) => {
@@ -194,12 +200,10 @@ let um = angular.module('user-management', [
                 $scope.setupConfig.fields.splice(index, 1)
             })
 
-            console.log('results', $scope.setupConfig)
             $rootScope.app.addons.get('@materia/users').setup($scope.setupConfig)
             $mdDialog.hide($scope.setupConfig)
         }
     }
     $scope.cancel = () => { $mdDialog.cancel() }
-    $scope.setup = () => { console.log('setup') }
 })
 module.exports = um

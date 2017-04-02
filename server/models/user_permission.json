@@ -8,6 +8,8 @@
 			"unique": true,
 			"required": true,
 			"component": "input",
+			"read": true,
+			"write": true,
 			"isRelation": {
 				"type": "belongsTo",
 				"reference": {
@@ -22,6 +24,8 @@
 			"unique": true,
 			"required": true,
 			"component": "input",
+			"read": true,
+			"write": true,
 			"isRelation": {
 				"type": "belongsTo",
 				"reference": {

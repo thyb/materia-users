@@ -281,6 +281,7 @@ class UserManagement {
                 controller: 'default',
                 action: 'changeEmail',
                 permissions: ['Authenticated'],
+                parent: "User management",
                 fromAddon: this.app.addons.get('@materia/users')
             }, this.options)
 
@@ -297,6 +298,7 @@ class UserManagement {
                         type: 'text',
                         required: true
                     }],
+                    parent: "User management",
                     controller: 'default',
                     action: 'verifyEmail',
                     fromAddon: this.app.addons.get('@materia/users')
@@ -314,6 +316,7 @@ class UserManagement {
                         entity: 'user',
                         id: 'lostPassword'
                     },
+                    parent: "User management",
                     fromAddon: this.app.addons.get('@materia/users')
                 }, this.options)
             }
@@ -330,6 +333,7 @@ class UserManagement {
                 controller: 'default',
                 action: 'changeUsername',
                 permissions: ['Authenticated'],
+                parent: "User management",                
                 fromAddon: this.app.addons.get('@materia/users')
             }, this.options)            
         }
@@ -391,37 +395,81 @@ class UserManagement {
             })
         });
 
-        this.app.api.permissions.add('Authenticated', 'Only signed in users are allowed', (req, res, next) => {
-            if ( req.user ) {
-                return next()
+        this.app.api.permissions.add({
+            name: 'Authenticated', 
+            description: 'Only signed in users are allowed', 
+            middleware: (req, res, next) => {
+    if ( req.user ) {
+        return next()
+    }
+    let e = new Error('Unauthorized')
+    e.statusCode = 401
+    throw e
+},
+            readOnly: true,
+            exports: {
+                //Not used yet but could be used for injecting param in endpointn builder.
+                'me.id_user': 'user.id_user', //req.user.id_user
+                'me.email': 'user.email', //req.user.email etc.
+                'me.name': 'user.name'
+                //TODO: add other user fields here
             }
-            let e = new Error('Unauthorized')
-            e.statusCode = 401
-            throw e
-        }, {
-            //Not used yet but could be used for injecting param in endpointn builder.
-            'me.id_user': 'user.id_user', //req.user.id_user
-            'me.email': 'user.email', //req.user.email etc.
-            'me.name': 'user.name'
-            //TODO: add other user fields here
         })
 
-        this.app.entities.get('user_role').getQuery('list').run().then(roles => {
-            roles.rows.forEach(row => {
-                this.app.api.permissions.add(
-                    row.role.substr(0, 1).toUppercase() + row.role.substr(1).toLowerCase(),
-                    'Only users with the permission ' + row.role + ' are allowed.', 
-                    (req, res, next) => {
-                        next()
-                    }
-                )
+        this.app.api.permissions.add({
+            name: 'Connected User ID',
+            description: 'Inject the id of the connected user',
+            middleware: (req, res, next) => {
+    if ( req.user ) {
+        if (req.method == 'get' || req.method == 'delete') {
+            req.query.id_user = req.user.id_user
+        }
+        else {
+            req.body.id_user = req.user.id_user
+        }
+    }
+    else {
+        let e = new Error('Unauthorized')
+        e.statusCode = 401
+        throw e
+    }
+},
+            readOnly: true
+        })
+
+        this.app.entities.get('user_role').getQuery('list').run({}, {raw: true}).then(roles => {
+            roles.data.forEach(row => {
+                let nameCapitalized = row.role.substr(0, 1).toUpperCase() + row.role.substr(1).toLowerCase()
+                this.app.api.permissions.add({
+                    name: nameCapitalized,
+                    description: 'Only users associated with the role "' + row.role + '" are allowed.',
+                    readOnly: true,
+                    middleware: (req, res, next) => {
+    if ( req.user ) {
+        this.app.entities.get('user_permission').getQuery('getUserRoles').run({
+            id_user: req.user.id_user
+        }).then((result) => {
+            let roles = result.data
+            if (roles.find((r) => r.role == row.role)) {
+                next()
+            }
+            else {
+                let e = new Error('Unauthorized')
+                e.statusCode = 401
+                throw e
+            }
+        })
+    }
+    else {
+        let e = new Error('Unauthorized')
+        e.statusCode = 401
+        throw e
+    }
+}
+                })
             })
         }).catch(e => {
             console.log(e)
-        })
-
-        this.app.api.permissions.add('Belongs to me', '', (req, res, next) => {
-
         })
     }
 

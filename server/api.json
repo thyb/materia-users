@@ -4,6 +4,7 @@
 		"url": "/user/signin",
 		"controller": "default",
 		"action": "signin",
+		"parent": "User management",
 		"params": [
 			{
 				"name": "login",
@@ -25,6 +26,7 @@
 		"url": "/user/logout",
 		"controller": "default",
 		"action": "logout",
+		"parent": "User management",
 		"permissions": [
 			"Authenticated"
 		]
@@ -34,6 +36,7 @@
 		"url": "/user/me",
 		"controller": "default",
 		"action": "me",
+		"parent": "User management",
 		"permissions": [
 			"Authenticated"
 		]
@@ -43,6 +46,7 @@
 		"url": "/user/me",
 		"controller": "default",
 		"action": "safeUpdate",
+		"parent": "User management",
 		"permissions": [
 			"Authenticated"
 		]
@@ -52,6 +56,7 @@
 		"url": "/user/me/password",
 		"controller": "default",
 		"action": "changePassword",
+		"parent": "User management",
 		"params": [
 			{
 				"name": "new_password",
@@ -77,6 +82,7 @@
 		"url": "/user/me",
 		"controller": "default",
 		"action": "destroy",
+		"parent": "User management",
 		"params": [{
 			"name": "login",
 			"type": "text",
@@ -91,6 +97,7 @@
 		"url": "/user/signup",
 		"controller": "default",
 		"action": "signup",
+		"parent": "User management",
 		"permissions": [
 			"Anyone"
 		]

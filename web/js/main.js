@@ -165,7 +165,7 @@ let um = angular.module('user-management', [
             //reduce the config of email verification by setting up only the entity name and the query id
             if ($scope.setupConfig.email_verification) {
                 if ($scope.setupConfig.email_action && $scope.setupConfig.email_action.query && $scope.setupConfig.email_action.entity) {
-                    if ($scope.setupConfig.email_action.entity.getField($scope.setupConfig.email_action.query.id)) {
+                    if ($scope.setupConfig.email_action.entity.getQuery($scope.setupConfig.email_action.query.id)) {
                         $scope.setupConfig.email_action.entity = $scope.setupConfig.email_action.entity.name
                         $scope.setupConfig.email_action.query = $scope.setupConfig.email_action.query.id
                     }

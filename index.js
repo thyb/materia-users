@@ -147,8 +147,6 @@ class UserManagement {
 
     afterLoadQueries() {
         if ( this.disabled ) { return Promise.resolve() }
-
-        console.log('after load queries....');
         let userEntity = this.app.entities.get('user')
 
         userEntity.addQuery({
@@ -237,7 +235,6 @@ class UserManagement {
     afterLoadAPI() {
         if ( this.disabled ) { return Promise.resolve() }
 
-        console.log('after load API....');
         let res = []
         
         let signupEndpoint = this.app.api.get('post', '/user/signup')
@@ -371,7 +368,6 @@ class UserManagement {
             usernameField: 'login',
             passwordField: 'password'
         }, (login, password, done) => {
-            console.log('trying to auth', login)
             let promise = Promise.resolve()
             if (this.config.type == 'email' || this.config.type == 'both') {
                 promise = promise.then(() => {
@@ -385,7 +381,6 @@ class UserManagement {
                 })
             }
             return promise.then(user => {
-                console.log('staticSalt', this.config.static_salt);
                 let encPassword = md5(this.config.static_salt + password + user.salt)
                 if (user.password == encPassword) {
                     delete user.password

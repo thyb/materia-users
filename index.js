@@ -319,6 +319,30 @@ class UserManagement {
                     parent: "User management",
                     fromAddon: this.app.addons.get('@materia/users')
                 }, this.options)
+
+                this.app.api.add({
+                    method: 'put',
+                    url: '/user/lost_password',
+                    params: [
+                        {
+                            "name": "new_password",
+                            "type": "text",
+                            "required": true
+                        }, {
+                            "name": "key",
+                            "type": "text",
+                            "required": true
+                        }, {
+                            "name": "id_user",
+                            "type": "number",
+                            "required": true
+                        }
+                    ],
+                    parent: 'User management',
+                    controller: 'default',
+                    action: 'changeLostPassword',
+                    fromAddon: this.app.addons.get('@materia/users')
+                }, this.options)
             }
         }
         if (this.config.type == 'username' || this.config.type == 'both') {
@@ -427,6 +451,7 @@ class UserManagement {
         else {
             req.body.id_user = req.user.id_user
         }
+        return next()
     }
     else {
         let e = new Error('Unauthorized')

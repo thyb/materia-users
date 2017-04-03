@@ -170,7 +170,7 @@ class UserModel {
 					}, {raw: true})
 				}
 				else {
-					return Promise.reject('Invalid login')
+					return Promise.reject(new Error('Invalid login'))
 				}
 			}
 		})
@@ -178,7 +178,7 @@ class UserModel {
 			if (user) {
 				this._execLostPassword(user)
 			}
-			else { return Promise.reject('Invalid login') }
+			else { return Promise.reject(new Errror('Invalid login')) }
 		})
 		.then(() => { return {emailSent: true } })
 	}

@@ -138,12 +138,11 @@ class DefaultCtrl {
 		})
 	}
 
-	//Params: key & new_password || old_password & new_password
-	changePassword(req, res, next) {
-		let params = Object.assign({}, req.query, req.body, req.query)
+	//Params: id_user & key & new_password
+	changeLostPassword(req, res, next) {
+		let params = Object.assign({}, req.params, req.body, req.query)
 		let userEntity = this.app.entities.get('user')
-
-		//lost password
+		
 		if (params.key && params.id_user && params.new_password && this.config.email_verification && (this.config.type == 'email' || this.config.type == 'both')) {
 			return userEntity.getQuery('get').run({
 				id_user: params.id_user
@@ -163,49 +162,58 @@ class DefaultCtrl {
 				return this.signin(req, res, next)
 			})
 		}
-		//regular change password (once logged in)
 		else {
-			if (params.old_password && params.new_password) {
-				if ( ! req.user || ! req.user.id_user ) {
-					return res.status(401).send({
+			return res.status(500).send({
+				error: true,
+				message: 'Missing required parameter'
+			})
+		}
+	}
+
+	//old_password & new_password
+	changePassword(req, res, next) {
+		let params = Object.assign({}, req.params, req.body, req.query)
+		let userEntity = this.app.entities.get('user')
+
+		if (params.old_password && params.new_password) {
+			if ( ! req.user || ! req.user.id_user ) {
+				return res.status(401).send({
+					error: true,
+					message: 'Unauthorized call.'
+				})
+			}
+			let staticSalt = this.config.static_salt
+
+			return userEntity.getQuery('get').run({
+				id_user: req.user.id_user
+			}, { raw: true }).then(user => {
+				let encryptedOldPassword = md5(staticSalt + params.old_password + user.salt)
+				let encryptedNewPassword = md5(staticSalt + params.new_password + user.salt)
+
+				if (user.password == encryptedOldPassword) {
+					return userEntity.getQuery('update').run({
+						id_user: req.user.id_user,
+						password: encryptedNewPassword,
+						key_password: null
+					}).then(() => user)
+				}
+				else {
+					return res.status(500).send({
 						error: true,
-						message: 'Unauthorized call.'
+						message: 'old password does not match'
 					})
 				}
-				let staticSalt = this.config.static_salt
-
-				return userEntity.getQuery('get').run({
-					id_user: req.user.id_user
-				}, { raw: true }).then(user => {
-					let encryptedOldPassword = md5(staticSalt + params.old_password + user.salt)
-					let encryptedNewPassword = md5(staticSalt + params.new_password + user.salt)
-
-					if (user.password == encryptedOldPassword) {
-						return userEntity.getQuery('update').run({
-							id_user: req.user.id_user,
-							password: encryptedNewPassword,
-							key_password: null
-						}).then(() => user)
-					}
-					else {
-						return res.status(500).send({
-							error: true,
-							message: 'old password does not match'
-						})
-					}
-				}).then(user => {
-					req.body.login = user.email || user.username
-					req.body.password = params.new_password
-					return this.signin(req, res, next)
-				})
-			}
-			else {
-				return res.status(500).send({
-					error: true,
-					message: 'Missing required parameter'
-				})
-				return Promise.reject()
-			}
+			}).then(user => {
+				req.body.login = user.email || user.username
+				req.body.password = params.new_password
+				return this.signin(req, res, next)
+			})
+		}
+		else {
+			return res.status(500).send({
+				error: true,
+				message: 'Missing required parameter'
+			})
 		}
 	}
 

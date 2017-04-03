@@ -57,6 +57,9 @@
 		"controller": "default",
 		"action": "changePassword",
 		"parent": "User management",
+		"permissions": [
+			"Authenticated"
+		],
 		"params": [
 			{
 				"name": "new_password",
@@ -65,15 +68,7 @@
 			}, {
 				"name": "old_password",
 				"type": "text",
-				"required": false
-			}, {
-				"name": "key",
-				"type": "text",
-				"required": false
-			}, {
-				"name": "id_user",
-				"type": "number",
-				"required": false
+				"required": true
 			}
 		]
 	},

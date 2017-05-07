@@ -414,6 +414,7 @@ class UserManagement {
             })
         });
 
+
         this.app.api.permissions.add({
             name: 'Authenticated', 
             description: 'Only signed in users are allowed', 
@@ -456,8 +457,8 @@ class UserManagement {
 },
             readOnly: true
         })
-
-        this.app.entities.get('user_role').getQuery('list').run({}, {raw: true}).then(roles => {
+        
+        this.app.entities.get('user_role').getQuery('list').run({}, {raw: true, silent: true}).then(roles => {
             roles.data.forEach(row => {
                 let nameCapitalized = row.role.substr(0, 1).toUpperCase() + row.role.substr(1).toLowerCase()
                 this.app.api.permissions.add({

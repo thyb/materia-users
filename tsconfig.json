@@ -18,7 +18,6 @@
       "dom"
     ],
     "paths": {
-      "@ngx-material-keyboard/core": [ "src/core/src/public_api.ts" ]
     }
   },
   "exclude": [

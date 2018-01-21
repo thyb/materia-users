@@ -15,7 +15,7 @@
   "scripts": {
     "build": "npm run build:core && npm run build:server",
     "build:core": "ng-packagr",
-    "build:server": "webpack",
+    "build:server": "webpack --config ./webpack.server.config.js",
     "lint": "npm run lint:ts && npm run lint:sass",
     "lint:ts": "ng lint --type-check=true",
     "lint:sass": "sass-lint --verbose --no-exit --config ./.sass-lint.yml",

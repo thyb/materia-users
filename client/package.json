@@ -32,6 +32,7 @@
     "passport-local": "^1.0.0"
   },
   "materia": {
+	"addonFile": "user-management.addon",
 	"name": "UserManagement",
 	"addon": "UserManagementAddon",
 	"module": "UserManagementModule"

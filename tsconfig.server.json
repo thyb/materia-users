@@ -1,15 +1,16 @@
 {
+    "compileOnSave": true,
     "compilerOptions": {
-      "module": "commonjs",
-      "target": "es5",
-      "sourceMap": true,
-      "outDir": "./client/",
-      "noImplicitAny": true
+        "rootDir": "./client/",
+        "outDir": "./dist/",
+        "sourceMap": true,
+        "declaration": true,
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "target": "ES6"
     },
-    "exclude": [
-      "node_modules"
-    ],
     "include": [
-      "client/*"
+        "client/user-management.addon.ts",
+        "typings/index.d.ts"
     ]
-  }
+}

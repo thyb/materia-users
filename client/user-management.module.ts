@@ -16,10 +16,12 @@ const MatProgressSpinnerModule = (window as any).angular.material.MatProgressBar
 const FlexLayoutModule = (window as any).angular.flexLayout.FlexLayoutModule;
 
 // Components and directives
-import { UserManagementViewComponent } from "./components";
+import { UserManagementViewComponent, UserManagementSetupComponent } from "./components";
 
-// Addon class
-// export { UserManagementAddon } from "./user-management.addon";
+const DECLARATIONS = [
+	UserManagementViewComponent,
+	UserManagementSetupComponent
+];
 
 @NgModule({
 	imports: [
@@ -37,13 +39,16 @@ import { UserManagementViewComponent } from "./components";
 		MatProgressBarModule,
 		MatProgressSpinnerModule
 	],
-	exports: [UserManagementViewComponent],
-	declarations: [UserManagementViewComponent],
-	entryComponents: [UserManagementViewComponent],
+	exports: [...DECLARATIONS],
+	declarations: [...DECLARATIONS],
+	entryComponents: [...DECLARATIONS],
 	providers: []
 })
 export class UserManagementModule {
 	static getViewComponent() {
 		return UserManagementViewComponent;
+	}
+	static getSetupComponent() {
+		return UserManagementSetupComponent;
 	}
 }

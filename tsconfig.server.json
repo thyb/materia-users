@@ -1,7 +1,7 @@
 {
     "compileOnSave": true,
     "compilerOptions": {
-        "rootDir": "./client/",
+        "rootDir": "./server/",
         "outDir": "./dist/",
         "sourceMap": true,
         "declaration": true,
@@ -10,7 +10,7 @@
         "target": "ES6"
     },
     "include": [
-        "client/user-management.addon.ts",
+        "server/index.ts",
         "typings/index.d.ts"
     ]
 }

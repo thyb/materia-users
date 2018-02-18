@@ -1,3 +1,35 @@
-<div>Hello World !!</div>
+<mat-toolbar>
+    <h2>User Management - Setup</h2>
+    <span fxFlex></span>
+    <button mat-icon-button (click)="cancel()">
+        <mat-icon aria-label="Close dialog">close</mat-icon>
+    </button>
+</mat-toolbar>
+<mat-horizontal-stepper [linear]="true" #stepper="matHorizontalStepper">
+    <mat-step [stepControl]="loginForm">
+      <form [formGroup]="loginForm">
+        <ng-template matStepLabel>Login</ng-template>
+        <div>
+          <button mat-button matStepperNext>Next</button>
+        </div>
+      </form>
+    </mat-step>
+    <mat-step [stepControl]="userForm">
+      <form [formGroup]="userForm">
+        <ng-template matStepLabel>User</ng-template>
 
-<button matButton (click)="cancelClick()">Cancel</button>
+        <div>
+          <button mat-button matStepperPrevious>Back</button>
+          <button mat-button matStepperNext>Next</button>
+        </div>
+      </form>
+    </mat-step>
+    <mat-step [stepControl]="emailForm">
+      <ng-template matStepLabel>Emails</ng-template>
+        <form [formGroup]="emailForm"></form>
+      <div>
+        <button mat-button matStepperPrevious>Back</button>
+        <button mat-button (click)="stepper.reset()">Reset</button>
+      </div>
+    </mat-step>
+  </mat-horizontal-stepper>

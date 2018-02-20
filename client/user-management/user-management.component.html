@@ -1,14 +1,20 @@
 <div fxLayout="row" fxFlex>
-	<mat-card fxLayout="column" fxFlex style="padding: 0;">
-		<div fxLayout="row" style="min-height: 52px">
-			<h3 style="margin:0; position: relative; top: 2px">
-				<mat-icon>people</mat-icon>
+	<mat-card fxLayout="column" fxFlex>
+		<mat-toolbar fxLayout="row" style="min-height: 52px" fxLayoutAlign="start center">
+			<mat-icon>people</mat-icon>
+			<span>
 				Users
-			</h3>
+			</span>
 			<span fxFlex></span>
-			<button mat-icon-button (click)="signup($event)">
+			<button mat-icon-button (click)="signup($event)" matTooltip="New User" matTooltipPosition="left"> 
 				<mat-icon>add</mat-icon>
 			</button>
+		</mat-toolbar>
+		<div *ngIf="! users || (users && ! users.length)" fxFlex fxLayout="column" fxLayoutAlign="center center" class="no-users">
+			<span>There is no users for the moment</span>
+			<div>
+				<button mat-raised-button [style.background]="'#4CAF50'" [style.margin]="'15px'" [style.color]="'white'">NEW USER</button>
+			</div>
 		</div>
 		<div *ngIf="users && users.length" style="border-top: 1px solid #EEE" fxLayout="column" fxFlex>
 			<div fxLayout="row" *ngFor="let user of users" style="border-bottom: 1px solid #EEE; cursor: pointer;min-height: 60px">

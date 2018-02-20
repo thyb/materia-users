@@ -3,23 +3,19 @@ import { Strategy as LocalStrategy } from "passport-local";
 import * as session from "express-session";
 import * as md5 from "md5";
 
-export class UserManagementAddon {
+export default class UserManagementAddon {
 	signupParams: any[];
 	options: { history: boolean; save: boolean; db: boolean };
 	disabled: boolean;
 	public static displayName = "User Management";
-	public static logo = "http://i1.wp.com/wassimchegham.com/wp/wp-content/uploads/2015/10/138338bc-7806-11e5-8057-d34c75f3cafc.png?w=1272";
+	public static logo = "https://oauth.io/img/logo.png";
 
 	public static installSettings = false;
 
 	constructor(private app: any, private config: any, private express: any) {
-		if (!this.config || !this.config.type) {
-			this.disabled = true;
-		}
-		express.use(passport.initialize());
-		express.use(passport.session());
-	}
 
+	}
+/*
 	afterLoadEntities() {
 		if (this.disabled) {
 			return Promise.resolve();
@@ -637,5 +633,5 @@ export class UserManagementAddon {
 			});
 	}
 
-	uninstall(app) {}
+	uninstall(app) {}*/
 }

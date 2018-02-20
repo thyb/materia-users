@@ -1,0 +1,39 @@
+h2 {
+	font-size: 1rem;
+    font-weight: 200;
+	padding: 4px 16px 0;
+	button {
+		margin: 0 24px;
+		mat-icon {
+			color: #555;
+			font-size: 1.2rem;
+			position: relative;
+			right: -3px;
+		}
+	}
+}
+mat-form-field {
+	width: 100%;
+	margin: 0 5px;
+}
+.mat-dialog-container {
+	padding: 0px;
+}
+.mat-dialog-content > div {
+	margin: 0 8px;
+	padding: 0px;
+	text-align: center;
+	width: 100%;
+}
+
+button {
+	margin: 0 5px;
+}
+
+.template-config-header {
+	cursor: pointer;
+}
+.template-config-header:hover {
+	cursor: pointer;
+	background: #FAFAFA;
+}

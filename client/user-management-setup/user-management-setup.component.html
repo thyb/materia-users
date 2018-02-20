@@ -1,0 +1,230 @@
+<mat-toolbar color="primary">
+    <h2>User Management - Setup</h2>
+    <span fxFlex></span>
+    <button mat-icon-button (click)="close()">
+        <mat-icon aria-label="Close dialog">close</mat-icon>
+    </button>
+</mat-toolbar>
+
+<mat-horizontal-stepper [linear]="true" #stepper="matHorizontalStepper">
+    <mat-step [stepControl]="loginForm">
+        <ng-template matStepLabel>Login</ng-template>
+        <form [formGroup]="loginForm" fxLayout="column" fxLayoutAlign="center center">
+            <h3 style="padding-bottom: 0; margin-bottom: 0; margin-top: 10px" class="text-center">
+                How your user should login ?
+            </h3>
+            <div fxLayout="row" style="width: 400px; margin: 0 auto; padding: 0">
+                <mat-form-field fxFlex>
+                    <mat-select placeholder="Login type" formControlName="type">
+                        <mat-option value="email">Email / Password</mat-option>
+                        <mat-option value="username">Username / Password</mat-option>
+                        <mat-option value="both">Email or Username / Password</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <h3 style="padding-bottom: 0; margin-bottom: 0; margin-top: 30px" class="text-center">
+                Enter a key to encrypt user's password
+            </h3>
+
+            <div fxLayout="row" style="width: 400px; margin: 0 auto; padding: 0">
+                <mat-form-field fxFlex>
+                    <input matInput placeholder="Static salt" formControlName="static_salt">
+                </mat-form-field>
+            </div>
+            <div>
+                <button mat-button mat-raised-button color="primary" matStepperNext>Next</button>
+            </div>
+        </form>
+    </mat-step>
+    <mat-step [stepControl]="userForm">
+        <ng-template matStepLabel>User</ng-template>
+        <form [formGroup]="userForm" fxLayout="column" fxLayoutAlign="center center">
+            <div>
+                <materia-fields-editor formControlName="fields"></materia-fields-editor>
+            </div>
+            <div>
+                <button mat-button matStepperPrevious>Back</button>
+                <button mat-raised-button color="primary" matStepperNext>Next</button>
+            </div>
+        </form>
+    </mat-step>
+    <mat-step [stepControl]="emailForm">
+        <ng-template matStepLabel>Security</ng-template>
+        <form [formGroup]="emailForm" fxLayout="column" fxLayoutAlign="center center">
+            <h3 style="padding-bottom: 0; margin-bottom: 0; margin-top: 10px" class="text-center">
+                <mat-checkbox formControlName="email_verification">Emails enabled</mat-checkbox>
+            </h3>
+            <div fxLayout="row" style="width: 400px; margin: 0 auto; padding: 10px 20px;">
+                <mat-form-field fxFlex>
+                    <mat-select placeholder="Entity"  formControlName="entity">
+                        <mat-option *ngFor="let e of app.entities.findAll()" [value]="e.name">{{ e.name }}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <mat-form-field fxFlex>
+                    <mat-select placeholder="Query"  formControlName="query">
+                        <mat-option *ngFor="let q of queries" [value]="q.id">{{q.id}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <h3 style="padding-bottom: 0; margin-bottom: 0; margin-top: 30px" class="text-center" *ngIf="loginForm.controls.type.value == 'email' || loginForm.controls.type.value == 'both'">
+                Email templates
+            </h3>
+            <div fxLayout="column" fxLayout="column">
+                <ul style="width: 400px; margin: 20px auto 0; padding: 0">
+                    <li fxLayout="column">
+                        <div style="width: 100%;" fxLayout="row">
+                            <span class="template-config-header" (click)="accordeon[2] = accordeon[1] = false; accordeon[0] = ! accordeon[0]" fxLayout="row"
+                                fxLayoutAlign="start center">
+                                <mat-icon>{{accordeon[0] ? 'keyboard_arrow_down' : 'keyboard_arrow_right'}}</mat-icon> Signup
+                            </span>
+                        </div>
+                        <div *ngIf="accordeon[0]" fxLayout="column" [formGroup]="emailForm.controls.email_signup">
+                            <div fxLayout="row">
+                                <mat-form-field fxFlex>
+                                    <input placeholder="Subject" matInput  formControlName="subject">
+                                </mat-form-field>
+                            </div>
+                            <div fxLayout="row">
+                                <mat-form-field fxFlex>
+                                    <textarea matInput placeholder="Message" style="min-height: 120px;" 
+                                        formControlName="message"></textarea>
+                                </mat-form-field>
+                            </div>
+                            <p>Available variables:
+                                <strong>[redirect_url]</strong>,
+                                <strong>[user.*]</strong> (e.g. [user.email])
+                            </p>
+                            <div fxLayout="row">
+                                <mat-form-field fxFlex>
+                                    <input matInput placeholder="Redirect URL"  formControlName="redirect_url">
+                                </mat-form-field>
+                            </div>
+                        </div>
+                    </li>
+                    <li fxLayout="column">
+                            <div style="width: 100%;" fxLayout="row">
+                                <span class="template-config-header" (click)="accordeon[0] = accordeon[2] = false; accordeon[1] = ! accordeon[1]" fxLayout="row"
+                                    fxLayoutAlign="start center">
+                                    <mat-icon>{{accordeon[1] ? 'keyboard_arrow_down' : 'keyboard_arrow_right'}}</mat-icon> Lost password
+                                </span>
+                            </div>
+                            <div *ngIf="accordeon[1]" fxLayout="column" [formGroup]="emailForm.controls.email_lost_password">
+                                <div fxLayout="row">
+                                    <mat-form-field fxFlex>
+                                        <input placeholder="Subject" matInput  formControlName="subject">
+                                    </mat-form-field>
+                                </div>
+                                <div fxLayout="row">
+                                    <mat-form-field fxFlex>
+                                        <textarea matInput placeholder="Message" style="min-height: 120px;" 
+                                            formControlName="message"></textarea>
+                                    </mat-form-field>
+                                </div>
+                                <p>Available variables:
+                                    <strong>[redirect_url]</strong>,
+                                    <strong>[user.*]</strong> (e.g. [user.email])
+                                </p>
+                                <div fxLayout="row">
+                                    <mat-form-field fxFlex>
+                                        <input matInput placeholder="Redirect URL"  formControlName="redirect_url">
+                                    </mat-form-field>
+                                </div>
+                            </div>
+                        </li>
+                        <li fxLayout="column">
+                                <div style="width: 100%;" fxLayout="row">
+                                    <span class="template-config-header" (click)="accordeon[1] = accordeon[0] = false; accordeon[2] = ! accordeon[2]" fxLayout="row"
+                                        fxLayoutAlign="start center">
+                                        <mat-icon>{{accordeon[2] ? 'keyboard_arrow_down' : 'keyboard_arrow_right'}}</mat-icon> Change email
+                                    </span>
+                                </div>
+                                <div *ngIf="accordeon[2]" fxLayout="column" [formGroup]="emailForm.controls.email_change_email">
+                                    <div fxLayout="row">
+                                        <mat-form-field fxFlex>
+                                            <input placeholder="Subject" matInput  formControlName="subject">
+                                        </mat-form-field>
+                                    </div>
+                                    <div fxLayout="row">
+                                        <mat-form-field fxFlex>
+                                            <textarea matInput placeholder="Message" style="min-height: 120px;" 
+                                                formControlName="message"></textarea>
+                                        </mat-form-field>
+                                    </div>
+                                    <p>Available variables:
+                                        <strong>[redirect_url]</strong>,
+                                        <strong>[user.*]</strong> (e.g. [user.email])
+                                    </p>
+                                    <div fxLayout="row">
+                                        <mat-form-field fxFlex>
+                                            <input matInput placeholder="Redirect URL"  formControlName="redirect_url">
+                                        </mat-form-field>
+                                    </div>
+                                </div>
+                            </li>
+                </ul>
+            </div>
+            <!--<li>
+              <span (click)="accordeon[0] = accordeon[2] = false; accordeon[1] = ! accordeon[1]">
+                  <mat-icon>{{accordeon[1] ? 'keyboard_arrow_down' : 'keyboard_arrow_right'}}</mat-icon> Lost password
+              </span>
+              <div *ngIf="accordeon[1]" fxLayout="column" fxFlex>
+                  <div fxLayout="row">
+                      <mat-form-field fxFlex>
+                          <label>Subject</label>
+                          <input [disabled]="!setupConfig.email_verification" type="text" ng-model="setupConfig.email_lost_password.subject">
+                      </mat-form-field>
+                  </div>
+                  <div fxLayout="row">
+                      <mat-form-field fxFlex>
+                          <label>Message</label>
+                          <textarea style="min-height: 120px;" [disabled]="!setupConfig.email_verification" ng-model="setupConfig.email_lost_password.message"></textarea>
+                      </mat-form-field>
+                  </div>
+                  <p>Available variable: <strong>[redirect_url]</strong>, <strong>[user.*] (e.g. user.email)</strong></p>
+                  <div fxLayout="row">
+                      <mat-form-field fxFlex>
+                          <label>Redirect URL</label>
+                          <input [disabled]="!setupConfig.email_verification" ng-model="setupConfig.email_lost_password.redirect_url"></textarea>
+                      </mat-form-field>
+                  </div>
+              </div>
+          </li>
+
+          <li>
+              <span style="cursor: pointer; " (click)="accordeon[0] = accordeon[1] = false; accordeon[2] = ! accordeon[2]">
+                  <mat-icon>{{accordeon[2] ? 'keyboard_arrow_down' : 'keyboard_arrow_right'}}</mat-icon> Change email
+              </span>
+              <div *ngIf="accordeon[2]" fxLayout="column" fxFlex>
+                  <div fxLayout="row">
+                      <mat-form-field fxFlex>
+                          <label>Subject</label>
+                          <input [disabled]="!setupConfig.email_verification" type="text" ng-model="setupConfig.email_change_email.subject">
+                      </mat-form-field>
+                  </div>
+                  <div fxLayout="row">
+                      <mat-form-field fxFlex>
+                          <label>Message</label>
+                          <textarea style="min-height: 120px;" [disabled]="!setupConfig.email_verification" ng-model="setupConfig.email_change_email.message"></textarea>
+                      </mat-form-field>
+                  </div>
+                  <p>Available variable: <strong>[redirect_url]</strong>, <strong>[user.*] (e.g. user.email)</strong></p>
+                  <div fxLayout="row">
+                      <mat-form-field fxFlex>
+                          <label>Redirect URL</label>
+                          <input [disabled]="!setupConfig.email_verification" ng-model="setupConfig.email_change_email.redirect_url"></textarea>
+                      </mat-form-field>
+                  </div>
+              </div>
+          </li>
+      </ul>
+      <div *ngIf="error.status" class="error" style="margin-top: 20px; padding: 10px 20px">
+          Error: {{error.message}}
+      </div>-->
+
+            <div>
+                <button mat-button matStepperPrevious>Back</button>
+                <button mat-raised-button color="primary" (click)="finish()">SAVE</button>
+            </div>
+        </form>
+    </mat-step>
+</mat-horizontal-stepper>

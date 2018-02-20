@@ -1,26 +1,19 @@
 {
-  "compileOnSave": false,
-  "compilerOptions": {
-    "outDir": "./dist/out-tsc",
-    "baseUrl": ".",
-    "sourceMap": true,
-    "declaration": false,
-    "moduleResolution": "node",
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "noUnusedParameters": false,
-    "target": "es5",
-    "typeRoots": [
-      "node_modules/@types"
-    ],
-    "lib": [
-      "es2017",
-      "dom"
-    ],
-    "paths": {
+    "compilerOptions": {
+        "target": "es5",
+        "module": "system",
+        "lib": [
+            "es2017",
+            "dom"
+        ],
+        "declaration": true,
+        "sourceMap": true,
+        "removeComments": true,
+        "moduleResolution": "node",
+        "typeRoots": [
+            "node_modules/@types"
+        ],
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true
     }
-  },
-  "exclude": [
-    ".ng_build"
-  ]
 }

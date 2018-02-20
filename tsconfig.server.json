@@ -2,7 +2,7 @@
     "compileOnSave": true,
     "compilerOptions": {
         "rootDir": "./server/",
-        "outDir": "./dist/",
+        "outDir": "./dist/server",
         "sourceMap": true,
         "declaration": true,
         "module": "commonjs",

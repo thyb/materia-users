@@ -21,7 +21,17 @@
 			"write": true
 		}
 	],
-	"relations": [],
+	"relations": [
+		{
+			"as": "user",
+			"through": "user_permission",
+			"type": "belongsToMany",
+			"reference": {
+				"entity": "user_role",
+				"as": "user_role"
+			}
+		}
+	],
 	"queries": [
 	]
 }

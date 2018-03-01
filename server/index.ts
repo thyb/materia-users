@@ -13,14 +13,13 @@ export default class UserManagementAddon {
 	public static installSettings = false;
 
 	constructor(private app: any, private config: any, private express: any) {
-
+		this._addPermissions();
 	}
-/*
+
 	afterLoadEntities() {
 		if (this.disabled) {
 			return Promise.resolve();
 		}
-
 		const userEntity = this.app.entities.get("user");
 		const res = [];
 		this.options = {
@@ -519,7 +518,7 @@ export default class UserManagementAddon {
 			)
 		);
 
-		passport.serializeUser(function(user, done) {
+		passport.serializeUser(function (user, done) {
 			done(null, user.id_user);
 		});
 
@@ -538,47 +537,6 @@ export default class UserManagementAddon {
 				.catch(err => {
 					done(err);
 				});
-		});
-
-		this.app.api.permissions.add({
-			name: "Authenticated",
-			description: "Only signed in users are allowed",
-			middleware: (req, res, next) => {
-				if (req.user) {
-					return next();
-				}
-				const e: any = new Error("Unauthorized");
-				e.statusCode = 401;
-				throw e;
-			},
-			readOnly: true,
-			exports: {
-				// Not used yet but could be used for injecting param in endpointn builder.
-				"me.id_user": "user.id_user", // req.user.id_user
-				"me.email": "user.email", // req.user.email etc.
-				"me.name": "user.name"
-				// TODO: add other user fields here
-			}
-		});
-
-		this.app.api.permissions.add({
-			name: "Connected User ID",
-			description: "Inject the id of the connected user",
-			middleware: (req, res, next) => {
-				if (req.user) {
-					if (req.method == "get" || req.method == "delete") {
-						req.query.id_user = req.user.id_user;
-					} else {
-						req.body.id_user = req.user.id_user;
-					}
-					return next();
-				} else {
-					const e: any = new Error("Unauthorized");
-					e.statusCode = 401;
-					throw e;
-				}
-			},
-			readOnly: true
 		});
 
 		this.app.entities
@@ -633,5 +591,48 @@ export default class UserManagementAddon {
 			});
 	}
 
-	uninstall(app) {}*/
+	_addPermissions() {
+		this.app.api.permissions.add({
+			name: "Authenticated",
+			description: "Only signed in users are allowed",
+			middleware: (req, res, next) => {
+				if (req.user) {
+					return next();
+				}
+				const e: any = new Error("Unauthorized");
+				e.statusCode = 401;
+				throw e;
+			},
+			readOnly: true,
+			exports: {
+				// Not used yet but could be used for injecting param in endpointn builder.
+				"me.id_user": "user.id_user", // req.user.id_user
+				"me.email": "user.email", // req.user.email etc.
+				"me.name": "user.name"
+				// TODO: add other user fields here
+			}
+		});
+
+		this.app.api.permissions.add({
+			name: "Connected User ID",
+			description: "Inject the id of the connected user",
+			middleware: (req, res, next) => {
+				if (req.user) {
+					if (req.method == "get" || req.method == "delete") {
+						req.query.id_user = req.user.id_user;
+					} else {
+						req.body.id_user = req.user.id_user;
+					}
+					return next();
+				} else {
+					const e: any = new Error("Unauthorized");
+					e.statusCode = 401;
+					throw e;
+				}
+			},
+			readOnly: true
+		});
+	}
+
+	uninstall(app) { }
 }

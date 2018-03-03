@@ -457,7 +457,7 @@ export default class UserManagementAddon {
 		}
 		return Promise.all(res).then(() => true);
 	}
-
+	
 	start() {
 		if (this.disabled) {
 			return Promise.resolve();

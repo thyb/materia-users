@@ -1,15 +1,8 @@
 
 import { Component, OnInit, Input, Output, EventEmitter, Inject, InjectionToken, NgZone, Optional, SkipSelf } from "@angular/core";
 import { FormGroup, FormControl, Validators, FormBuilder } from "@angular/forms";
-import { MatSnackBar } from "@angular/material";
-import { OVERLAY_PROVIDERS } from "@angular/cdk/overlay"
 
 import { AddonSetup } from "@materia/addons";
-import { Overlay, OverlayPositionBuilder, ScrollStrategyOptions } from "@angular/cdk/overlay";
-import { VIEWPORT_RULER_PROVIDER } from "@angular/cdk/scrolling";
-import { ScrollDispatcher, SCROLL_DISPATCHER_PROVIDER } from "@angular/cdk/scrolling";
-import { Platform } from "@angular/cdk/platform";
-import { SCROLL_DISPATCHER_PROVIDER_FACTORY } from "@angular/cdk/scrolling";
 
 export interface IBoilerplateSetup {
 	name: string;
@@ -24,13 +17,7 @@ export interface IBoilerplateSetup {
 	selector: "materia-user-management-setup",
 	templateUrl: "./user-management-setup.component.html",
 	styleUrls: ["./user-management-setup.component.scss"],
-	providers: [FormBuilder, MatSnackBar]
-	/*{
-	// If there is already a ScrollDispatcher available, use that. Otherwise, provide a new one.
-	provide: ScrollDispatcher,
-	deps: [[new Optional(), new SkipSelf(), ScrollDispatcher], NgZone, Platform],
-	useFactory: SCROLL_DISPATCHER_PROVIDER_FACTORY
-}, ScrollStrategyOptions, Overlay]*/
+	providers: [FormBuilder]
 })
 export default class UserManagementSetupComponent implements OnInit {
 	fields: ({ name: string; type: string; readonly: boolean; unique: boolean; required: boolean; } | { name: string; type: string; readonly: boolean; required: boolean; unique?: undefined; })[];

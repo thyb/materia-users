@@ -1,6 +1,4 @@
-import * as passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
-import * as session from "express-session";
 import * as md5 from "md5";
 
 export default class UserManagementAddon {
@@ -151,7 +149,7 @@ export default class UserManagementAddon {
 			);
 		}
 
-		if (this.config.fields.length) {
+		if (this.config.fields && this.config.fields.length) {
 			this.config.fields.forEach(field => {
 				res.push(
 					userEntity.addField(
@@ -463,6 +461,7 @@ export default class UserManagementAddon {
 			return Promise.resolve();
 		}
 
+		const passport = this.app.server.passport
 		passport.use(
 			new LocalStrategy(
 				{
@@ -605,7 +604,7 @@ export default class UserManagementAddon {
 			},
 			readOnly: true,
 			exports: {
-				// Not used yet but could be used for injecting param in endpointn builder.
+				// Not used yet but could be used for injecting param in endpoint builder.
 				"me.id_user": "user.id_user", // req.user.id_user
 				"me.email": "user.email", // req.user.email etc.
 				"me.name": "user.name"

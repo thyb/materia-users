@@ -2,7 +2,8 @@ const md5 = require('md5')
 
 class DefaultCtrl {
 	constructor(app) { 
-		this.app = app; 
+		this.app = app;
+		this.passport = this.app.server.passport
 		this.config = this.app.addons.addonsConfig['@materia/users']
 	}
 
@@ -63,9 +64,8 @@ class DefaultCtrl {
 	}
 
 	signin(req, res, next) {
-		var passport = require('passport')
 		return new Promise((resolve, reject) => {
-			passport.authenticate('local', function(err, user, info) {
+			this.passport.authenticate('local', function(err, user, info) {
 				if (err) { return reject(err) }
 				if (!user) { return reject(new Error('bad credentials')) }
 				req.logIn(user, function(err) {

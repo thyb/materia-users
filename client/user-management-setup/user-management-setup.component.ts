@@ -138,8 +138,8 @@ export default class UserManagementSetupComponent implements OnInit {
 		});
 		this.emailForm.controls.entity.valueChanges.subscribe(val => {
 			if (val) {
-				const ent = this.app.entities.get(val);
-				this.queries = ent.getQueries();
+				const ent = this.app.entities.find(e => e.name == val);
+				this.queries = ent.queries;
 			} else {
 				this.queries = [];
 			}
@@ -181,8 +181,8 @@ export default class UserManagementSetupComponent implements OnInit {
 
 	getQueries(entityName) {
 		if (entityName) {
-			const entity = this.app.entities.get(entityName);
-			this.queries = entity.getQueries();
+			const entity = this.app.entities.find(e => e.name === entityName);
+			this.queries = entity.queries;
 		} else {
 			this.queries = [];
 		}

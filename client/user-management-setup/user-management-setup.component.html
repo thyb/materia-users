@@ -57,7 +57,7 @@
             <div fxLayout="row" style="width: 400px; margin: 0 auto; padding: 10px 20px;">
                 <mat-form-field fxFlex>
                     <mat-select placeholder="Entity"  formControlName="entity">
-                        <mat-option *ngFor="let e of app.entities.findAll()" [value]="e.name">{{ e.name }}</mat-option>
+                        <mat-option *ngFor="let e of app.entities" [value]="e.name">{{ e.name }}</mat-option>
                     </mat-select>
                 </mat-form-field>
                 <mat-form-field fxFlex>

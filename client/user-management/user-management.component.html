@@ -10,11 +10,11 @@
 					Users
 				</span>
 				<span fxFlex></span>
-				<button mat-icon-button (click)="showSignupForm = true" matTooltip="New User" matTooltipPosition="left"> 
+				<button mat-icon-button (click)="openSignupDialog()" matTooltip="New User" matTooltipPosition="left"> 
 					<mat-icon>add</mat-icon>
 				</button>
 			</mat-toolbar>
-			<div *ngIf="users && users.length; else noUser" style="border-top: 1px solid #EEE" fxLayout="column" fxFlex>
+			<div *ngIf="users && users.length; else noUser" style="border-top: 1px solid #EEE; overflow-y: auto;" fxLayout="column" fxFlex>
 				<div fxLayout="row" fxLayoutAlign="start center" *ngFor="let user of users" style="border-bottom: 1px solid #EEE; cursor: pointer;min-height: 40px">
 					<img [src]="'http://www.gravatar.com/avatar/' + user.emailHash + '?d=mm&s=32'" class="avatar" style="margin: 0 8px; width:32px; height:32px;border-radius: 100%" />
 					<div style="color: #999; padding-top: 0">{{user.email}}</div>
@@ -32,15 +32,11 @@
 		<div *ngIf="userSelected" fxFlex>
 			
 		</div>
-		<materia-signup-form
-			*ngIf="showSignupForm"
-
-			(signup)="signup($event)"
-			(cancel)="showSignupForm = false"
-
-			fxLayout="column"
-			fxFlex
-			style="width: 300px"
-		></materia-signup-form>
 	</div>
 </div>
+<materia-signup-form
+	#signupFormTemplate
+
+	(signup)="signup($event)"
+	(cancel)="closeSignupDialog()"
+></materia-signup-form>

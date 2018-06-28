@@ -1,18 +1,20 @@
-<mat-card fxLayout="column" fxFlex style="margin: 8px; padding: 0;">
-	<mat-toolbar>Create a new user</mat-toolbar>
-
-	<form [formGroup]="signupForm" fxLayout="column" style="padding: 24px;">
-		<mat-form-field>
-			<input formControlName="email" matInput placeholder="Email" required type="text" name="email">
-		</mat-form-field>
-
-		<mat-form-field>
-			<input formControlName="password" matInput placeholder="Password" required type="password" name="password">
-		</mat-form-field>
-
-		<div>
-			<button (click)="signup.emit(signupForm.value)" mat-raised-button color="primary">Create</button>
-			<button (click)="cancel.emit()" mat-raised-button>Cancel</button>
-		</div>
-	</form>
-</mat-card>
+<ng-template #template>
+	<mat-card fxLayout="column">
+		<mat-toolbar>Create a new user</mat-toolbar>
+	
+		<form [formGroup]="signupForm" fxLayout="column" style="padding: 24px;">
+			<mat-form-field>
+				<input formControlName="email" matInput placeholder="Email" required type="text" name="email">
+			</mat-form-field>
+	
+			<mat-form-field>
+				<input formControlName="password" matInput placeholder="Password" required type="password" name="password">
+			</mat-form-field>
+	
+			<div>
+				<button (click)="signup.emit(signupForm.value)" mat-raised-button color="primary">Create</button>
+				<button (click)="cancel.emit()" mat-raised-button>Cancel</button>
+			</div>
+		</form>
+	</mat-card>
+</ng-template>

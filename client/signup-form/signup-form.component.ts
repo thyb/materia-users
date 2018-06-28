@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Inject, Output, EventEmitter, ViewChild, TemplateRef } from '@angular/core';
 import { AddonComponent } from '@materia/addons';
 import { FormBuilder, Validators, FormGroup } from '@angular/forms';
 
@@ -14,6 +14,8 @@ import { FormBuilder, Validators, FormGroup } from '@angular/forms';
 export class SignupFormComponent implements OnInit {
 	@Output() signup: EventEmitter<any> = new EventEmitter();
 	@Output() cancel:EventEmitter<void> = new EventEmitter();
+
+	@ViewChild('template') template: TemplateRef<any>;
 
 	signupForm: FormGroup;
 

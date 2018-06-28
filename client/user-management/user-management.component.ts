@@ -1,9 +1,10 @@
-import { Component, OnInit, Input, Output, EventEmitter, Inject } from '@angular/core';
-import { MatDialog } from '@angular/material';
+import { Component, OnInit, Input, Output, EventEmitter, Inject, ViewChild, TemplateRef } from '@angular/core';
+import { MatDialog, MatDialogRef } from '@angular/material';
 import { Addon, AddonSetup } from '@materia/addons';
 import { HttpClient } from '@angular/common/http';
 
 import { md5 } from './md5';
+import { SignupFormComponent } from '../signup-form/signup-form.component';
 
 export interface User {
 	email: string,
@@ -30,10 +31,12 @@ export default class UserManagementViewComponent implements OnInit {
 
 	@Output() openSetup = new EventEmitter<void>();
 
+	@ViewChild(SignupFormComponent) signupDialogComp: SignupFormComponent;
+
 	me: any;
 	users: User[] = []
 	nbUsers = 0;
-	showSignupForm = false;
+	signupDialog: MatDialogRef<any>;
 
 	constructor(
 		@Inject('MatDialog') private dialog: MatDialog,
@@ -60,11 +63,20 @@ export default class UserManagementViewComponent implements OnInit {
 		}, () => this.me = null)
 	}
 
+	openSignupDialog() {
+		this.signupDialog = this.dialog.open(this.signupDialogComp.template, { panelClass: 'no-padding' });
+		this.signupDialogComp.ngOnInit();
+	}
+
+	closeSignupDialog() {
+		this.signupDialog.close();
+	}
+
 	signup(user) {
 		console.log(user);
+		this.signupDialog.close()
 		this.http.post<any>(`${this.apiUrl}/user/signup`, user).subscribe(() => {
 			this.init()
-			this.showSignupForm = false;
 		})
 	}
 

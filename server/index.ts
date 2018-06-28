@@ -11,7 +11,6 @@ export default class UserManagementAddon {
 	public static installSettings = false;
 
 	constructor(private app: any, private config: any, private express: any) {
-		this._addPermissions();
 	}
 
 	afterLoadEntities() {
@@ -460,7 +459,7 @@ export default class UserManagementAddon {
 		if (this.disabled) {
 			return Promise.resolve();
 		}
-
+		this._addPermissions();
 		const passport = this.app.server.passport
 		passport.use(
 			new LocalStrategy(
@@ -589,19 +588,18 @@ export default class UserManagementAddon {
 				console.log(e);
 			});
 	}
-
 	_addPermissions() {
 		this.app.api.permissions.add({
 			name: "Authenticated",
 			description: "Only signed in users are allowed",
 			middleware: (req, res, next) => {
-				if (req.user) {
-					return next();
-				}
-				const e: any = new Error("Unauthorized");
-				e.statusCode = 401;
-				throw e;
-			},
+	if (req.user) {
+		return next();
+	}
+	const e: any = new Error("Unauthorized");
+	e.statusCode = 401;
+	throw e;
+},
 			readOnly: true,
 			exports: {
 				// Not used yet but could be used for injecting param in endpoint builder.
@@ -616,19 +614,19 @@ export default class UserManagementAddon {
 			name: "Connected User ID",
 			description: "Inject the id of the connected user",
 			middleware: (req, res, next) => {
-				if (req.user) {
-					if (req.method == "get" || req.method == "delete") {
-						req.query.id_user = req.user.id_user;
-					} else {
-						req.body.id_user = req.user.id_user;
-					}
-					return next();
-				} else {
-					const e: any = new Error("Unauthorized");
-					e.statusCode = 401;
-					throw e;
-				}
-			},
+	if (req.user) {
+		if (req.method == "get" || req.method == "delete") {
+			req.query.id_user = req.user.id_user;
+		} else {
+			req.body.id_user = req.user.id_user;
+		}
+		return next();
+	} else {
+		const e: any = new Error("Unauthorized");
+		e.statusCode = 401;
+		throw e;
+	}
+},
 			readOnly: true
 		});
 	}

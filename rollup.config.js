@@ -23,11 +23,14 @@ export default {
     external: [
         '@materia/addons',
         '@angular/animations',
-        '@angular/core',
+		'@angular/core',
+		'@angular/common',
         '@angular/material',
         '@angular/cdk',
 		'@angular/platform-browser',
 		'@angular/forms',
+		'rxjs',
+		'rxjs/operator',
 		'passport'
     ]
 }

@@ -1,33 +1,46 @@
-<div fxLayout="row" fxFlex>
-	<mat-card fxLayout="column" fxFlex>
-		<mat-toolbar fxLayout="row" style="min-height: 52px" fxLayoutAlign="start center">
-			<mat-icon>people</mat-icon>
-			<span>
-				Users
-			</span>
-			<span fxFlex></span>
-			<button mat-icon-button (click)="signup($event)" matTooltip="New User" matTooltipPosition="left"> 
-				<mat-icon>add</mat-icon>
-			</button>
-		</mat-toolbar>
-		<div *ngIf="! users || (users && ! users.length)" fxFlex fxLayout="column" fxLayoutAlign="center center" class="no-users">
-			<span>There is no users for the moment</span>
-			<div>
-				<button mat-raised-button [style.background]="'#4CAF50'" [style.margin]="'15px'" [style.color]="'white'">NEW USER</button>
-			</div>
-		</div>
-		<div *ngIf="users && users.length" style="border-top: 1px solid #EEE" fxLayout="column" fxFlex>
-			<div fxLayout="row" *ngFor="let user of users" style="border-bottom: 1px solid #EEE; cursor: pointer;min-height: 60px">
-				<img [src]="'http://www.gravatar.com/avatar/' + user.email + '?d=mm&s=32'" class="avatar" style="width:32px; height:32px;"
-				/>
-				<div fxFlex fxLayout="column">
-					<div style="font-weight: bold">{{user.name}}</div>
+<div fxLayout="column" fxFlex>
+	<div *ngIf="me" style="padding: 8px 16px; background-color: #4CAF50">
+		Currently connected as {{me.email}} (<a style="text-decoration: underline; cursor: pointer;" (click)="logout()">Logout</a>)
+	</div>
+	<div fxLayout="row" fxFlex>
+		<mat-card fxLayout="column" fxFlex>
+			<mat-toolbar fxLayout="row" fxLayoutAlign="start center">
+				<mat-icon>people</mat-icon>
+				<span>
+					Users
+				</span>
+				<span fxFlex></span>
+				<button mat-icon-button (click)="showSignupForm = true" matTooltip="New User" matTooltipPosition="left"> 
+					<mat-icon>add</mat-icon>
+				</button>
+			</mat-toolbar>
+			<div *ngIf="users && users.length; else noUser" style="border-top: 1px solid #EEE" fxLayout="column" fxFlex>
+				<div fxLayout="row" fxLayoutAlign="start center" *ngFor="let user of users" style="border-bottom: 1px solid #EEE; cursor: pointer;min-height: 40px">
+					<img [src]="'http://www.gravatar.com/avatar/' + user.emailHash + '?d=mm&s=32'" class="avatar" style="margin: 0 8px; width:32px; height:32px;border-radius: 100%" />
 					<div style="color: #999; padding-top: 0">{{user.email}}</div>
 				</div>
 			</div>
+			<ng-template #noUser>
+				<div fxFlex fxLayout="column" fxLayoutAlign="center center" class="no-users">
+					<span>There is no users registered yet</span>
+					<div>
+						<button mat-raised-button color="primary" [style.margin]="'15px'" [style.color]="'white'">Create a user</button>
+					</div>
+				</div>
+			</ng-template>
+		</mat-card>
+		<div *ngIf="userSelected" fxFlex>
+			
 		</div>
-	</mat-card>
-	<div *ngIf="userSelected" fxFlex>
+		<materia-signup-form
+			*ngIf="showSignupForm"
 
+			(signup)="signup($event)"
+			(cancel)="showSignupForm = false"
+
+			fxLayout="column"
+			fxFlex
+			style="width: 300px"
+		></materia-signup-form>
 	</div>
 </div>

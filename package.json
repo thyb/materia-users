@@ -30,18 +30,21 @@
     "postinstall": "npm rebuild node-sass"
   },
   "dependencies": {
-    "@angular/animations": "^5.2.5",
-    "@angular/cdk": "^5.2.1",
-    "@angular/core": "^5.2.2",
-    "@angular/forms": "^5.2.5",
-    "@angular/material": "^5.2.1",
+    "@angular/animations": "^6.0.5",
+    "@angular/cdk": "^6.3",
+    "@angular/common": "^6.0.5",
+    "@angular/core": "^6.0.5",
+    "@angular/forms": "^6.0.5",
+    "@angular/material": "^6.3",
     "express-session": "^1.14.1",
     "flash": "^1.1.0",
     "md5": "^2.2.1",
     "passport": "^0.3.2",
-    "passport-local": "^1.0.0"
+    "passport-local": "^1.0.0",
+    "rxjs": "^6.2.1"
   },
   "devDependencies": {
+    "@angular/cli": "^6.0.8",
     "ncp": "^2.0.0",
     "rimraf": "^2.6.2",
     "rollup": "^0.55.1",

@@ -1,5 +1,5 @@
 <div fxLayout="column" fxFlex>
-	<div *ngIf="me" style="padding: 8px 16px; background-color: #4CAF50">
+	<div *ngIf="me" style="padding: 8px 16px; background-color: #4CAF50; color: white;">
 		Currently connected as {{me.email}} (<a style="text-decoration: underline; cursor: pointer;" (click)="logout()">Logout</a>)
 	</div>
 	<div fxLayout="row" fxFlex>
@@ -10,8 +10,9 @@
 					Users
 				</span>
 				<span fxFlex></span>
-				<button mat-icon-button (click)="openSignupDialog()" matTooltip="New User" matTooltipPosition="left"> 
-					<mat-icon>add</mat-icon>
+				<button style="margin-right: 8px;" mat-button>Configure emails</button>
+				<button mat-mini-fab (click)="openSignupDialog()" matTooltip="New User" matTooltipPosition="left" style="width: 31px; height: 31px;">
+					<mat-icon style="position: relative; top: -6px; left: -4px;">add</mat-icon>
 				</button>
 			</mat-toolbar>
 			<div *ngIf="users && users.length; else noUser" style="border-top: 1px solid #EEE; overflow-y: auto;" fxLayout="column" fxFlex>
@@ -24,14 +25,11 @@
 				<div fxFlex fxLayout="column" fxLayoutAlign="center center" class="no-users">
 					<span>There is no users registered yet</span>
 					<div>
-						<button mat-raised-button color="primary" [style.margin]="'15px'" [style.color]="'white'">Create a user</button>
+						<button (click)="openSignupDialog()" mat-raised-button color="primary" [style.margin]="'15px'" [style.color]="'white'">Create a user</button>
 					</div>
 				</div>
 			</ng-template>
 		</mat-card>
-		<div *ngIf="userSelected" fxFlex>
-			
-		</div>
 	</div>
 </div>
 <materia-signup-form

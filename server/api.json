@@ -1,100 +1,168 @@
 [
-	{
-		"method": "post",
-		"url": "/user/signin",
-		"controller": "default",
-		"action": "signin",
-		"parent": "User management",
-		"params": [
-			{
-				"name": "login",
-				"type": "text",
-				"required": true,
-				"component": "input"
-			},
-			{
-				"name": "password",
-				"type": "text",
-				"required": true,
-				"component": "password"
-			}
-
-		]
-	},
-	{
-		"method": "post",
-		"url": "/user/logout",
-		"controller": "default",
-		"action": "logout",
-		"parent": "User management",
-		"permissions": [
-			"Authenticated"
-		]
-	},
-	{
-		"method": "get",
-		"url": "/user/me",
-		"controller": "default",
-		"action": "me",
-		"parent": "User management",
-		"permissions": [
-			"Authenticated"
-		]
-	},
-	{
-		"method": "put",
-		"url": "/user/me",
-		"controller": "default",
-		"action": "safeUpdate",
-		"parent": "User management",
-		"permissions": [
-			"Authenticated"
-		]
-	},
-	{
-		"method": "put",
-		"url": "/user/me/password",
-		"controller": "default",
-		"action": "changePassword",
-		"parent": "User management",
-		"permissions": [
-			"Authenticated"
-		],
-		"params": [
-			{
-				"name": "new_password",
-				"type": "text",
-				"required": true
-			}, {
-				"name": "old_password",
-				"type": "text",
-				"required": true
-			}
-		]
-	},
-	{
-		"method": "delete",
-		"url": "/user/me",
-		"controller": "default",
-		"action": "destroy",
-		"parent": "User management",
-		"params": [{
-			"name": "login",
-			"type": "text",
-			"required": "true"
-		}],
-		"permissions": [
-			"Authenticated"
-		]
-	},
-	{
-		"method": "post",
-		"url": "/user/signup",
-		"controller": "default",
-		"action": "signup",
-		"parent": "User management",
-		"permissions": [
-			"Anyone"
-		]
-	}
+  {
+    "method": "post",
+    "url": "/user/signin",
+    "controller": "default",
+    "action": "signin",
+    "parent": "User management",
+    "params": [
+      {
+        "name": "email",
+        "type": "text",
+        "required": true,
+        "component": "input"
+      },
+      {
+        "name": "password",
+        "type": "text",
+        "required": true,
+        "component": "password"
+      }
+    ]
+  },
+  {
+    "method": "post",
+    "url": "/user/logout",
+    "controller": "default",
+    "action": "logout",
+    "parent": "User management",
+    "permissions": ["Authenticated"]
+  },
+  {
+    "method": "get",
+    "url": "/user/me",
+    "controller": "default",
+    "action": "me",
+    "parent": "User management",
+    "permissions": ["Authenticated"]
+  },
+  {
+    "method": "put",
+    "url": "/user/me/email",
+    "params": [
+      {
+        "name": "new_email",
+        "type": "text",
+        "required": true,
+        "component": "email"
+      }
+    ],
+    "controller": "default",
+    "action": "changeEmail",
+    "permissions": ["Authenticated"],
+    "parent": "User management"
+  },
+  {
+    "method": "put",
+    "url": "/user/me/password",
+    "controller": "default",
+    "action": "changePassword",
+    "parent": "User management",
+    "permissions": ["Authenticated"],
+    "params": [
+      {
+        "name": "new_password",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "old_password",
+        "type": "text",
+        "required": true
+      }
+    ]
+  },
+  {
+    "method": "delete",
+    "url": "/user/me",
+    "controller": "default",
+    "action": "destroy",
+    "parent": "User management",
+    "params": [
+      {
+        "name": "email",
+        "type": "text",
+        "required": "true"
+      }
+    ],
+    "permissions": ["Authenticated"]
+  },
+  {
+    "method": "post",
+    "url": "/user/signup",
+    "controller": "default",
+    "action": "signup",
+    "parent": "User management",
+    "params": [
+      {
+        "name": "email",
+        "type": "text",
+        "required": "true"
+      },
+      {
+        "name": "password",
+        "type": "text",
+        "required": "true"
+      }
+    ]
+  },
+  {
+    "method": "get",
+    "url": "/user/verify/:id_user/:key_email",
+    "params": [
+      {
+        "name": "id_user",
+        "type": "number",
+        "required": true
+      },
+      {
+        "name": "key_email",
+        "type": "text",
+        "required": true
+      }
+    ],
+    "parent": "User management",
+    "controller": "default",
+    "action": "verifyEmail"
+  },
+  {
+    "method": "post",
+    "url": "/user/lost_password",
+    "params": [
+      {
+        "name": "email",
+        "type": "text",
+        "required": true
+      }
+    ],
+    "query": {
+      "entity": "user",
+      "id": "lostPassword"
+    },
+    "parent": "User management"
+  },
+  {
+    "method": "put",
+    "url": "/user/lost_password",
+    "params": [
+      {
+        "name": "new_password",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "key",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "id_user",
+        "type": "number",
+        "required": true
+      }
+    ],
+    "parent": "User management",
+    "controller": "default",
+    "action": "changeLostPassword"
+  }
 ]

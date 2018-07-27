@@ -1,224 +1,221 @@
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import {
+  FormGroup,
+  FormControl,
+  Validators,
+  FormBuilder
+} from '@angular/forms';
 
-import { Component, OnInit, Input, Output, EventEmitter, Inject, InjectionToken, NgZone, Optional, SkipSelf } from "@angular/core";
-import { FormGroup, FormControl, Validators, FormBuilder } from "@angular/forms";
-
-import { AddonSetup } from "@materia/addons";
+import { AddonSetup } from '@materia/addons';
+import { HttpClient } from '@angular/common/http';
 
 export interface IBoilerplateSetup {
-	name: string;
+  name: string;
 }
 
-@AddonSetup({
-	package: "@materia/users",
-	name: "UserManagementSetup",
-	deps: []
-})
+@AddonSetup('@materia/users')
 @Component({
-	selector: "materia-user-management-setup",
-	templateUrl: "./user-management-setup.component.html",
-	styleUrls: ["./user-management-setup.component.scss"],
-	providers: [FormBuilder]
+  selector: 'materia-user-management-setup',
+  templateUrl: './user-management-setup.component.html',
+  styleUrls: ['./user-management-setup.component.scss'],
+  providers: [FormBuilder]
 })
-export default class UserManagementSetupComponent implements OnInit {
-	fields: ({ name: string; type: string; readonly: boolean; unique: boolean; required: boolean; } | { name: string; type: string; readonly: boolean; required: boolean; unique?: undefined; })[];
-	@Input() app;
-	@Input() settings;
+export class UserManagementSetupComponent implements OnInit {
+  @Input() app;
+  @Input() settings;
 
-	@Output() save = new EventEmitter<IBoilerplateSetup>();
-	@Output("cancel") cancel: EventEmitter<any> = new EventEmitter<void>();
+  @Input() baseUrl: string;
+  @Input() token: string;
 
-	loginForm: FormGroup;
-	emailForm: FormGroup;
-	userForm: FormGroup;
-	queries = [];
-	accordeon = [false, false, false];
+  @Output() save = new EventEmitter<IBoilerplateSetup>();
+  @Output('cancel') cancel: EventEmitter<any> = new EventEmitter<void>();
 
-	constructor(private fb: FormBuilder) {
-		this.fields = [
-			{ name: "username", type: "text", readonly: true, unique: true, required: true },
-			{ name: "password", type: "text", readonly: true, required: true }
-		]
-		this.loginForm = this.fb.group({
-			type: ["", Validators.required],
-			static_salt: ["", Validators.required]
-		});
-		this.emailForm = new FormGroup({
-			email_verification: new FormControl(""),
-			entity: new FormControl(""),
-			query: new FormControl(""),
-			email_signup: new FormGroup({
-				subject: new FormControl(""),
-				message: new FormControl(""),
-				redirect_url: new FormControl("")
-			}),
-			email_lost_password: new FormGroup({
-				subject: new FormControl(""),
-				message: new FormControl(""),
-				redirect_url: new FormControl("")
-			}),
-			email_change_email: new FormGroup({
-				subject: new FormControl(""),
-				message: new FormControl(""),
-				redirect_url: new FormControl("")
-			})
-		});
-		this.userForm = new FormGroup({
-			fields: new FormControl(
-				this.fields,
-				[Validators.required]
-			)
-		});
-	}
+  loginForm: FormGroup;
+  entities: any[];
+  // emailForm: FormGroup;
 
-	ngOnInit() {
-		if (!this.settings) {
-			this.loginForm.controls.type.setValue("username");
-			this.emailForm.controls.email_verification.disable();
-		} else {
-			this.loginForm.controls.type.setValue(this.settings.type);
-			this.loginForm.controls.static_salt.setValue(this.settings.static_salt);
-			if (this.settings.fields) {
-				this.settings.fields.forEach(f => {
-					if (f.name == "email" || f.name == "username" || f.name == "password") {
-						f.readonly = true;
-					}
-				})
-				this.userForm.controls.fields.setValue(this.settings.fields);
-			}
-			if (this.settings.type == "both" || this.settings.type == "email") {
-				this.emailForm.controls.email_verification.setValue(this.settings.email_verification);
-				if (this.settings.email_signup) {
-					this.emailForm.controls.email_signup.setValue(this.settings.email_signup);
-				}
-				if (this.settings.email_change_email) {
-					this.emailForm.controls.email_change_email.setValue(this.settings.email_change_email);
-				}
-				if (this.settings.email_lost_password) {
-					this.emailForm.controls.email_lost_password.setValue(this.settings.email_lost_password);
-				}
-				if (this.settings.email_action) {
-					this.emailForm.controls.entity.setValue(this.settings.email_action.entity);
-					this.emailForm.controls.query.setValue(this.settings.email_action.query);
-					this.getQueries(this.settings.email_action.entity);
-				}
-			}
-		}
-		this.loginForm.controls.type.valueChanges.subscribe(val => {
-			switch (val) {
-				case "username":
-					this.emailForm.controls.email_verification.setValue(false);
-					this.emailForm.controls.email_verification.disable();
-					this.fields = [
-						{ name: "username", type: "text", readonly: true, unique: true, required: true },
-						{ name: "password", type: "text", readonly: true, required: true }
-					]
-					break;
-				case "email":
-					this.emailForm.controls.email_verification.enable();
-					this.fields = [
-						{ name: "email", type: "text", readonly: true, unique: true, required: true },
-						{ name: "password", type: "text", readonly: true, required: true }
-					]
-					break;
-				case "both":
-					this.emailForm.controls.email_verification.enable();
-					this.fields = [
-						{ name: "email", type: "text", readonly: true, unique: true, required: true },
-						{ name: "username", type: "text", readonly: true, unique: true, required: true },
-						{ name: "password", type: "text", readonly: true, required: true }
-					]
-					break;
-				default:
-					this.fields = [
-						{ name: "username", type: "text", readonly: true, unique: true, required: true },
-						{ name: "password", type: "text", readonly: true, required: true }
-					]
-			}
-			this.userForm.controls.fields.setValue(this.fields);
-		});
-		this.emailForm.controls.entity.valueChanges.subscribe(val => {
-			if (val) {
-				const ent = this.app.entities.find(e => e.name == val);
-				this.queries = ent.queries;
-			} else {
-				this.queries = [];
-			}
-		});
-		this.emailForm.controls.email_verification.valueChanges.subscribe(val => {
-			if (val) {
-				this.emailForm.controls.entity.enable();
-				this.emailForm.controls.query.enable();
-				let c = this.emailForm.controls.email_signup["controls"]
-				c.message.enable()
-				c.subject.enable()
-				c.redirect_url.enable()
-				c = this.emailForm.controls.email_lost_password["controls"]
-				c.message.enable()
-				c.subject.enable()
-				c.redirect_url.enable()
-				c = this.emailForm.controls.email_change_email["controls"]
-				c.message.enable()
-				c.subject.enable()
-				c.redirect_url.enable()
-			} else {
-				this.emailForm.controls.entity.disable();
-				this.emailForm.controls.query.disable();
-				let c = this.emailForm.controls.email_signup["controls"]
-				c.message.disable()
-				c.subject.disable()
-				c.redirect_url.disable()
-				c = this.emailForm.controls.email_lost_password["controls"]
-				c.message.disable()
-				c.subject.disable()
-				c.redirect_url.disable()
-				c = this.emailForm.controls.email_change_email["controls"]
-				c.message.disable()
-				c.subject.disable()
-				c.redirect_url.disable()
-			}
-		});
-	}
+  // accordeon = [false, false, false];
+  emailAddons = [];
+  constructor(private fb: FormBuilder, private http: HttpClient) {
+    this.loginForm = this.fb.group({
+      method: ['session', Validators.required],
+      static_salt: ['', Validators.required],
+      user_profile_enabled: new FormControl(false),
+      user_profile_entity: new FormControl(''),
+      email_verification: new FormControl(false),
+      email_addon: new FormControl('')
+    });
+    // this.emailForm = new FormGroup({
+    //   email_signup: new FormGroup({
+    //     subject: new FormControl(''),
+    //     message: new FormControl(''),
+    //     redirect_url: new FormControl('')
+    //   }),
+    //   email_lost_password: new FormGroup({
+    //     subject: new FormControl(''),
+    //     message: new FormControl(''),
+    //     redirect_url: new FormControl('')
+    //   }),
+    //   email_change_email: new FormGroup({
+    //     subject: new FormControl(''),
+    //     message: new FormControl(''),
+    //     redirect_url: new FormControl('')
+    //   })
+    // });
+  }
 
-	getQueries(entityName) {
-		if (entityName) {
-			const entity = this.app.entities.find(e => e.name === entityName);
-			this.queries = entity.queries;
-		} else {
-			this.queries = [];
-		}
-	}
+  ngOnInit() {
+    this.http
+      .get<any>(this.baseUrl + '/infos')
+      .toPromise()
+      .then(res => {
+        this.entities = res.entities.filter(entity => !entity.fromAddon);
+        this.emailAddons = res.addons.filter(
+          addon =>
+            addon.package === '@materia/sendgrid' ||
+            addon.package === '@materia/mailjet'
+        );
+        if (this.emailAddons.length > 0) {
+          this.loginForm
+            .get('email_addon')
+            .setValue(
+              (this.settings && this.settings.email_addon) ||
+                this.emailAddons[0].package
+            );
+          this.loginForm
+            .get('email_verification')
+            .setValue(
+              (this.settings && this.settings.email_verification) || false
+            );
+        } else {
+          this.loginForm.get('email_verification').disable();
+          this.loginForm.get('email_verification').setValue(false);
+          this.loginForm.get('email_addon').disable();
+        }
+        if (this.entities.length > 0) {
+          this.loginForm
+            .get('user_profile_entity')
+            .setValue(
+              (this.settings && this.settings.user_profile_entity) ||
+                this.entities[0].name
+            );
+          this.loginForm
+            .get('user_profile_enabled')
+            .setValue(
+              (this.settings && this.settings.user_profile_enabled) || false
+            );
+        } else {
+          this.loginForm.get('user_profile_enabled').setValue(false);
+          this.loginForm.get('user_profile_entity').setValue('');
+          this.loginForm.get('user_profile_enabled').disable();
+          this.loginForm.get('user_profile_entity').disable();
+        }
+        if (!this.settings || !this.settings.email_verification) {
+          this.loginForm.get('email_addon').disable();
+        }
+        if (this.settings && this.settings.method) {
+          this.loginForm.get('method').setValue(this.settings.method);
+        }
+        this.loginForm
+          .get('static_salt')
+          .setValue((this.settings && this.settings.static_salt) || '');
+      });
 
-	saveClick() {
-		const config = { name: "@materia/users" };
-		this.save.emit(config);
-	}
+    // if (this.settings.email_signup) {
+    //   this.emailForm.controls.email_signup.setValue(
+    //     this.settings.email_signup
+    //   );
+    // }
+    // if (this.settings.email_change_email) {
+    //   this.emailForm.controls.email_change_email.setValue(
+    //     this.settings.email_change_email
+    //   );
+    // }
+    // if (this.settings.email_lost_password) {
+    //   this.emailForm.controls.email_lost_password.setValue(
+    //     this.settings.email_lost_password
+    //   );
+    // }
+    // if (this.settings.email_action) {
+    //   this.loginForm.controls.entity.setValue(
+    //     this.settings.email_action.entity
+    //   );
+    //   this.loginForm.controls.query.setValue(
+    //     this.settings.email_action.query
+    //   );
+    //   this.getQueries(this.settings.email_action.entity);
+    // }
+    this.loginForm.get('user_profile_enabled').valueChanges.subscribe(val => {
+      if (val) {
+        this.loginForm.get('user_profile_entity').enable();
+      } else {
+        this.loginForm.get('user_profile_entity').disable();
+      }
+    });
 
-	finish() {
-		const setupConfig = Object.assign(
-			{},
-			this.loginForm.value,
-			{
-				fields: this.userForm.controls.fields.value.map(f => {
-					delete f.readonly;
-					f.signup = f.required;
-					return f;
-				})
-			},
-			{
-				email_verification: this.emailForm.controls.email_verification.value,
-				email_action: {
-					entity: this.emailForm.controls.entity.value,
-					query: this.emailForm.controls.query.value
-				},
-				email_signup: this.emailForm.controls.email_signup.value,
-				email_lost_password: this.emailForm.controls.email_lost_password.value,
-				email_change_email: this.emailForm.controls.email_change_email.value
-			}
-		);
-		this.save.emit(setupConfig);
-	}
+    this.loginForm.get('email_verification').valueChanges.subscribe(val => {
+      if (val) {
+        this.loginForm.get('email_addon').enable();
+        // let c = this.emailForm.controls.email_signup['controls'];
+        // c.message.enable();
+        // c.subject.enable();
+        // c.redirect_url.enable();
+        // c = this.emailForm.controls.email_lost_password['controls'];
+        // c.message.enable();
+        // c.subject.enable();
+        // c.redirect_url.enable();
+        // c = this.emailForm.controls.email_change_email['controls'];
+        // c.message.enable();
+        // c.subject.enable();
+        // c.redirect_url.enable();
+      } else {
+        this.loginForm.get('email_addon').disable();
+        // let c = this.emailForm.controls.email_signup['controls'];
+        // c.message.disable();
+        // c.subject.disable();
+        // c.redirect_url.disable();
+        // c = this.emailForm.controls.email_lost_password['controls'];
+        // c.message.disable();
+        // c.subject.disable();
+        // c.redirect_url.disable();
+        // c = this.emailForm.controls.email_change_email['controls'];
+        // c.message.disable();
+        // c.subject.disable();
+        // c.redirect_url.disable();
+      }
+    });
+  }
 
-	close() {
-		this.cancel.emit();
-	}
+  // getQueries(entityName) {
+  //   if (entityName) {
+  //     const entity = this.entities.find(e => e.name === entityName);
+  //     this.queries = entity.queries;
+  //     if (entity.name === 'sendgrid' || entity.name === 'mailjet') {
+  //       this.loginForm.get('query').setValue('send');
+  //     }
+  //   } else {
+  //     this.queries = [];
+  //   }
+  // }
+
+  saveClick() {
+    const config = { name: '@materia/users' };
+    this.save.emit(config);
+  }
+
+  finish() {
+    const setupConfig = Object.assign({}, this.loginForm.value);
+    // , {
+    //   email_signup: this.emailForm.controls.email_signup.value,
+    //   email_lost_password: this.emailForm.controls.email_lost_password.value,
+    //   email_change_email: this.emailForm.controls.email_change_email.value
+    // }
+
+    console.log(setupConfig);
+    this.save.emit(setupConfig);
+  }
+
+  close() {
+    this.cancel.emit();
+  }
 }

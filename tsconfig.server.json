@@ -6,7 +6,8 @@
         "sourceMap": true,
         "declaration": true,
         "module": "commonjs",
-        "moduleResolution": "node",
+		"moduleResolution": "node",
+		"experimentalDecorators": true,
         "target": "ES6"
     },
     "include": [

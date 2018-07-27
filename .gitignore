@@ -1,5 +1,2 @@
-# Output Directories #
-node_modules
-.rpt2_cache
-dist
-/yarn-error.log
+dist/
+node_modules/

@@ -36,7 +36,23 @@ class UserModel {
 		params.salt = salt
 		params.key_email = this._generateKey()
 
+		const paramsProfile = {};
+
+		Object.keys(params).forEach(paramName => {
+			if (['email', 'password', 'salt', 'key_email'].indexOf(paramName) == -1) {
+				paramsProfile[paramName] = params[paramName];
+				delete params[paramName];
+			}
+		})
 		return user.getQuery('create').run(params).then(created => {
+			let p = Promise.resolve(created);
+			if (this.config && this.config.user_profile_enabled && this.config.user_profile_entity) {
+				const profileEntity = this.app.entities.get(this.config.user_profile_entity);
+				paramsProfile.id_user = created.id_user;
+				p = profileEntity.getQuery('create').run(paramsProfile);
+			}
+			return p
+		}).then(created => {
 			return this.sendVerificationEmail({id_user: created.id_user}).then(() => created).catch(() => created)
 		})
 	}
@@ -156,7 +172,7 @@ class UserModel {
 		let userPromise = Promise.resolve();
 		if (this.config.type == 'email' || this.config.type == 'both') {
 			userPromise = this.app.entities.get('user').getQuery('getByEmail').run({
-				email: params.login
+				email: params.email
 			}, {raw:true})
 		}
 		return userPromise.then(user => {
@@ -166,11 +182,11 @@ class UserModel {
 			else {
 				if (this.config.type == 'both') {
 					return this.app.entities.get('user').getQuery('getByUsername').run({
-						username: params.login
+						username: params.email
 					}, {raw: true})
 				}
 				else {
-					return Promise.reject(new Error('Invalid login'))
+					return Promise.reject(new Error('Invalid email'))
 				}
 			}
 		})
@@ -178,7 +194,7 @@ class UserModel {
 			if (user) {
 				this._execLostPassword(user)
 			}
-			else { return Promise.reject(new Errror('Invalid login')) }
+			else { return Promise.reject(new Errror('Invalid email')) }
 		})
 		.then(() => { return {emailSent: true } })
 	}

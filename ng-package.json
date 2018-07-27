@@ -1,0 +1,19 @@
+{
+  "$schema": "./node_modules/ng-packagr/ng-package.schema.json",
+  "dest": "./dist/client",
+  "deleteDestPath": false,
+  "lib": {
+    "entryFile": "client/public_api.ts"
+  },
+  "whitelistedNonPeerDependencies": [
+    "tslib",
+    "md5",
+    "flash",
+    "express-session",
+    "passport",
+	"passport-local",
+	"oauth2orize",
+	"passport-oauth2-client-password",
+	"passport-http-bearer"
+  ]
+}

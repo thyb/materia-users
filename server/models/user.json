@@ -1,37 +1,169 @@
 {
-	"id": "e05855cb-a080-43d5-afd1-c23b0ce3f641",
-	"fields": [
-		{
-			"name": "id_user",
-			"type": "number",
-			"primary": true,
-			"unique": true,
-			"required": true,
-			"autoIncrement": true,
-			"component": "input",
-			"read": true,
-			"write": false
-		},
-		{
-			"name": "salt",
+  "id": "e05855cb-a080-43d5-afd1-c23b0ce3f641",
+  "fields": [
+    {
+      "name": "id_user",
+      "type": "number",
+      "primary": true,
+      "unique": true,
+      "required": true,
+      "autoIncrement": true,
+      "component": "input",
+      "read": true,
+      "write": false
+    },
+    {
+      "name": "email",
+      "type": "text",
+      "required": true,
+      "component": "input",
+      "unique": true,
+      "read": true,
+      "write": true
+    },
+    {
+      "name": "password",
+      "type": "text",
+      "required": true,
+      "component": "password",
+      "read": true,
+      "write": true
+    },
+    {
+      "name": "salt",
+      "type": "text",
+      "required": true,
+      "component": "input",
+      "read": true,
+      "write": true
+    },
+    {
+      "name": "verified",
+      "type": "boolean",
+      "required": true,
+      "default": true,
+      "defaultValue": false,
+      "component": "switch",
+      "read": true,
+      "write": true
+    },
+    {
+      "name": "new_email",
+      "type": "text",
+      "required": false,
+      "component": "input",
+      "read": true,
+      "write": true
+    },
+    {
+      "name": "key_email",
+      "type": "text",
+      "required": false,
+      "component": "input",
+      "read": true,
+      "write": true
+    },
+    {
+      "name": "key_password",
+      "type": "text",
+      "required": false,
+      "component": "input",
+      "read": true,
+      "write": true
+    }
+  ],
+  "relations": [
+    {
+      "as": "user",
+      "through": "user_permission",
+      "type": "belongsToMany",
+      "reference": {
+        "entity": "user_role",
+        "as": "user_role"
+      }
+    }
+  ],
+  "queries": [
+    {
+      "id": "signup",
+      "type": "custom",
+      "opts": {
+        "params": [
+          {
+            "name": "email",
+            "required": true,
 			"type": "text",
-			"required": true,
-			"component": "input",
-			"read": true,
-			"write": true
-		}
-	],
-	"relations": [
-		{
-			"as": "user",
-			"through": "user_permission",
-			"type": "belongsToMany",
-			"reference": {
-				"entity": "user_role",
-				"as": "user_role"
-			}
-		}
-	],
-	"queries": [
-	]
+			"component": "email"
+          },
+          {
+            "name": "password",
+            "required": true,
+			"type": "text",
+			"component": "password"
+          }
+        ],
+        "action": "signup"
+      }
+    },
+    {
+      "id": "getByEmail",
+      "type": "findOne",
+      "opts": {
+        "conditions": [
+          {
+            "name": "email",
+            "operator": "=",
+            "value": "="
+          }
+        ]
+      }
+    },
+    {
+      "id": "lostPassword",
+      "type": "custom",
+      "opts": {
+        "params": [
+          {
+            "name": "email",
+            "type": "text",
+            "required": true
+          }
+        ],
+        "action": "lostPassword"
+      }
+    },
+    {
+      "id": "verifyEmail",
+      "type": "custom",
+      "opts": {
+        "params": [
+          {
+            "name": "id_user",
+            "type": "text",
+            "required": true
+          },
+          {
+            "name": "key_email",
+            "type": "text",
+            "required": true
+          }
+        ],
+        "action": "verifyEmail"
+      }
+    },
+    {
+      "id": "sendVerificationEmail",
+      "type": "custom",
+      "opts": {
+        "params": [
+          {
+            "name": "id_user",
+            "type": "number",
+            "required": true
+          }
+        ],
+        "action": "sendVerificationEmail"
+      }
+    }
+  ]
 }

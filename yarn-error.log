@@ -109,7 +109,8 @@ npm manifest:
       "passport": "^0.4.0",
       "passport-http-bearer": "^1.0.1",
       "passport-local": "^1.0.0",
-      "passport-oauth2-client-password": "^0.1.2"
+      "passport-oauth2-client-password": "^0.1.2",
+      "sequelize": "^4.38.0"
     }
   }
 
@@ -367,6 +368,10 @@ Lockfile:
   "@types/estree@0.0.39":
     version "0.0.39"
     resolved "https://registry.yarnpkg.com/@types/estree/-/estree-0.0.39.tgz#e177e699ee1b8c22d23174caaa7422644389509f"
+  
+  "@types/geojson@^1.0.0":
+    version "1.0.6"
+    resolved "https://registry.yarnpkg.com/@types/geojson/-/geojson-1.0.6.tgz#3e02972728c69248c2af08d60a48cbb8680fffdf"
   
   "@types/jasmine@*", "@types/jasmine@~2.8.6":
     version "2.8.8"
@@ -999,7 +1004,7 @@ Lockfile:
     dependencies:
       minimist "^1.2.0"
   
-  bluebird@^3.3.0, bluebird@^3.5.1:
+  bluebird@^3.3.0, bluebird@^3.4.6, bluebird@^3.5.0, bluebird@^3.5.1:
     version "3.5.1"
     resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-3.5.1.tgz#d9551f9de98f1fcda1e683d17ee91a0602ee2eb9"
   
@@ -1446,6 +1451,13 @@ Lockfile:
   clone@^2.1.1:
     version "2.1.1"
     resolved "https://registry.yarnpkg.com/clone/-/clone-2.1.1.tgz#d217d1e961118e3ac9a4b8bba3285553bf647cdb"
+  
+  cls-bluebird@^2.1.0:
+    version "2.1.0"
+    resolved "https://registry.yarnpkg.com/cls-bluebird/-/cls-bluebird-2.1.0.tgz#37ef1e080a8ffb55c2f4164f536f1919e7968aee"
+    dependencies:
+      is-bluebird "^1.0.2"
+      shimmer "^1.1.0"
   
   co@^4.6.0:
     version "4.6.0"
@@ -1974,7 +1986,7 @@ Lockfile:
     dependencies:
       ms "0.7.2"
   
-  debug@2.6.9, debug@2.x.x, debug@^2.1.2, debug@^2.2.0, debug@^2.3.3, debug@^2.6.6, debug@^2.6.8:
+  debug@2.6.9, debug@2.x.x, debug@^2.1.2, debug@^2.2.0, debug@^2.3.3, debug@^2.6.6, debug@^2.6.8, debug@^2.6.9:
     version "2.6.9"
     resolved "https://registry.yarnpkg.com/debug/-/debug-2.6.9.tgz#5d128515df134ff327e90a4c93f4e077a536341f"
     dependencies:
@@ -2067,7 +2079,7 @@ Lockfile:
     version "1.1.1"
     resolved "https://registry.yarnpkg.com/depd/-/depd-1.1.1.tgz#5783b4e1c459f06fa5ca27f991f3d06e7a310359"
   
-  depd@~1.1.1, depd@~1.1.2:
+  depd@^1.1.0, depd@~1.1.1, depd@~1.1.2:
     version "1.1.2"
     resolved "https://registry.yarnpkg.com/depd/-/depd-1.1.2.tgz#9bcd52e14c097763e749b274c4346ed2e560b5a9"
   
@@ -2194,6 +2206,10 @@ Lockfile:
     resolved "https://registry.yarnpkg.com/dot-prop/-/dot-prop-4.2.0.tgz#1f19e0c2e1aa0e32797c49799f2837ac6af69c57"
     dependencies:
       is-obj "^1.0.0"
+  
+  dottie@^2.0.0:
+    version "2.0.0"
+    resolved "https://registry.yarnpkg.com/dottie/-/dottie-2.0.0.tgz#da191981c8b8d713ca0115d5898cf397c2f0ddd0"
   
   duplexer3@^0.1.4:
     version "0.1.4"
@@ -2883,6 +2899,10 @@ Lockfile:
     dependencies:
       globule "^1.0.0"
   
+  generic-pool@^3.4.0:
+    version "3.4.2"
+    resolved "https://registry.yarnpkg.com/generic-pool/-/generic-pool-3.4.2.tgz#92ff7196520d670839a67308092a12aadf2f6a59"
+  
   get-caller-file@^1.0.1:
     version "1.0.3"
     resolved "https://registry.yarnpkg.com/get-caller-file/-/get-caller-file-1.0.3.tgz#f978fa4c90d1dfe7ff2d6beda2a515e713bdcf4a"
@@ -3384,6 +3404,10 @@ Lockfile:
     version "0.0.1"
     resolved "https://registry.yarnpkg.com/indexof/-/indexof-0.0.1.tgz#82dc336d232b9062179d05ab3293a66059fd435d"
   
+  inflection@1.12.0:
+    version "1.12.0"
+    resolved "https://registry.yarnpkg.com/inflection/-/inflection-1.12.0.tgz#a200935656d6f5f6bc4dc7502e1aecb703228416"
+  
   inflight@^1.0.4:
     version "1.0.6"
     resolved "https://registry.yarnpkg.com/inflight/-/inflight-1.0.6.tgz#49bd6331d7d02d0c09bc910a1075ba8165b56df9"
@@ -3452,6 +3476,10 @@ Lockfile:
     resolved "https://registry.yarnpkg.com/is-binary-path/-/is-binary-path-1.0.1.tgz#75f16642b480f187a711c814161fd3a4a7655898"
     dependencies:
       binary-extensions "^1.0.0"
+  
+  is-bluebird@^1.0.2:
+    version "1.0.2"
+    resolved "https://registry.yarnpkg.com/is-bluebird/-/is-bluebird-1.0.2.tgz#096439060f4aa411abee19143a84d6a55346d6e2"
   
   is-buffer@^1.1.5, is-buffer@~1.1.1:
     version "1.1.6"
@@ -4143,7 +4171,7 @@ Lockfile:
     version "3.10.1"
     resolved "https://registry.yarnpkg.com/lodash/-/lodash-3.10.1.tgz#5bf45e8e49ba4189e17d482789dfd15bd140b7b6"
   
-  lodash@^4.0.0, lodash@^4.17.10, lodash@^4.17.3, lodash@^4.17.4, lodash@^4.17.5, lodash@^4.5.0, lodash@~4.17.10:
+  lodash@^4.0.0, lodash@^4.17.1, lodash@^4.17.10, lodash@^4.17.3, lodash@^4.17.4, lodash@^4.17.5, lodash@^4.5.0, lodash@~4.17.10:
     version "4.17.10"
     resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.10.tgz#1b7793cf7259ea38fb3661d4d38b3260af8ae4e7"
   
@@ -4446,6 +4474,16 @@ Lockfile:
     resolved "https://registry.yarnpkg.com/mkdirp/-/mkdirp-0.5.1.tgz#30057438eac6cf7f8c4767f38648d6697d75c903"
     dependencies:
       minimist "0.0.8"
+  
+  moment-timezone@^0.5.14:
+    version "0.5.21"
+    resolved "https://registry.yarnpkg.com/moment-timezone/-/moment-timezone-0.5.21.tgz#3cba247d84492174dbf71de2a9848fa13207b845"
+    dependencies:
+      moment ">= 2.9.0"
+  
+  "moment@>= 2.9.0", moment@^2.20.0:
+    version "2.22.2"
+    resolved "https://registry.yarnpkg.com/moment/-/moment-2.22.2.tgz#3c257f9839fc0e93ff53149632239eb90783ff66"
   
   move-concurrently@^1.0.1:
     version "1.0.1"
@@ -5708,6 +5746,13 @@ Lockfile:
     version "0.1.15"
     resolved "https://registry.yarnpkg.com/ret/-/ret-0.1.15.tgz#b8a4825d5bdb1fc3f6f53c2bc33f81388681c7bc"
   
+  retry-as-promised@^2.3.2:
+    version "2.3.2"
+    resolved "https://registry.yarnpkg.com/retry-as-promised/-/retry-as-promised-2.3.2.tgz#cd974ee4fd9b5fe03cbf31871ee48221c07737b7"
+    dependencies:
+      bluebird "^3.4.6"
+      debug "^2.6.9"
+  
   retry@^0.10.0:
     version "0.10.1"
     resolved "https://registry.yarnpkg.com/retry/-/retry-0.10.1.tgz#e76388d217992c252750241d3d3956fed98d8ff4"
@@ -5933,6 +5978,28 @@ Lockfile:
       range-parser "~1.2.0"
       statuses "~1.4.0"
   
+  sequelize@^4.38.0:
+    version "4.38.0"
+    resolved "https://registry.yarnpkg.com/sequelize/-/sequelize-4.38.0.tgz#330c1aa445d4e46b80a97d895603c01666cdc357"
+    dependencies:
+      bluebird "^3.5.0"
+      cls-bluebird "^2.1.0"
+      debug "^3.1.0"
+      depd "^1.1.0"
+      dottie "^2.0.0"
+      generic-pool "^3.4.0"
+      inflection "1.12.0"
+      lodash "^4.17.1"
+      moment "^2.20.0"
+      moment-timezone "^0.5.14"
+      retry-as-promised "^2.3.2"
+      semver "^5.5.0"
+      terraformer-wkt-parser "^1.1.2"
+      toposort-class "^1.0.1"
+      uuid "^3.2.1"
+      validator "^10.4.0"
+      wkx "^0.4.1"
+  
   serialize-javascript@^1.4.0:
     version "1.5.0"
     resolved "https://registry.yarnpkg.com/serialize-javascript/-/serialize-javascript-1.5.0.tgz#1aa336162c88a890ddad5384baebc93a655161fe"
@@ -6029,6 +6096,10 @@ Lockfile:
       array-map "~0.0.0"
       array-reduce "~0.0.0"
       jsonify "~0.0.0"
+  
+  shimmer@^1.1.0:
+    version "1.2.0"
+    resolved "https://registry.yarnpkg.com/shimmer/-/shimmer-1.2.0.tgz#f966f7555789763e74d8841193685a5e78736665"
   
   signal-exit@^3.0.0, signal-exit@^3.0.2:
     version "3.0.2"
@@ -6496,6 +6567,19 @@ Lockfile:
     dependencies:
       execa "^0.7.0"
   
+  terraformer-wkt-parser@^1.1.2:
+    version "1.2.0"
+    resolved "https://registry.yarnpkg.com/terraformer-wkt-parser/-/terraformer-wkt-parser-1.2.0.tgz#c9d6ac3dff25f4c0bd344e961f42694961834c34"
+    dependencies:
+      "@types/geojson" "^1.0.0"
+      terraformer "~1.0.5"
+  
+  terraformer@~1.0.5:
+    version "1.0.9"
+    resolved "https://registry.yarnpkg.com/terraformer/-/terraformer-1.0.9.tgz#77851fef4a49c90b345dc53cf26809fdf29dcda6"
+    optionalDependencies:
+      "@types/geojson" "^1.0.0"
+  
   text-table@^0.2.0:
     version "0.2.0"
     resolved "https://registry.yarnpkg.com/text-table/-/text-table-0.2.0.tgz#7f5ee823ae805207c00af2df4a84ec3fcfa570b4"
@@ -6580,6 +6664,10 @@ Lockfile:
       extend-shallow "^3.0.2"
       regex-not "^1.0.2"
       safe-regex "^1.1.0"
+  
+  toposort-class@^1.0.1:
+    version "1.0.1"
+    resolved "https://registry.yarnpkg.com/toposort-class/-/toposort-class-1.0.1.tgz#7ffd1f78c8be28c3ba45cd4e1a3f5ee193bd9988"
   
   toposort@^1.0.0:
     version "1.0.7"
@@ -6924,7 +7012,7 @@ Lockfile:
     version "1.0.1"
     resolved "https://registry.yarnpkg.com/utils-merge/-/utils-merge-1.0.1.tgz#9f95710f50a267947b2ccc124741c1028427e713"
   
-  uuid@^3.0.0, uuid@^3.0.1, uuid@^3.1.0:
+  uuid@^3.0.0, uuid@^3.0.1, uuid@^3.1.0, uuid@^3.2.1:
     version "3.3.2"
     resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.3.2.tgz#1b4af4955eb3077c501c23872fc6513811587131"
   
@@ -6940,6 +7028,10 @@ Lockfile:
     resolved "https://registry.yarnpkg.com/validate-npm-package-name/-/validate-npm-package-name-3.0.0.tgz#5fa912d81eb7d0c74afc140de7317f0ca7df437e"
     dependencies:
       builtins "^1.0.3"
+  
+  validator@^10.4.0:
+    version "10.4.0"
+    resolved "https://registry.yarnpkg.com/validator/-/validator-10.4.0.tgz#ee99a44afb3bb5ed350a159f056ca72a204cfc3c"
   
   vary@~1.1.2:
     version "1.1.2"
@@ -7166,6 +7258,12 @@ Lockfile:
     version "0.1.0"
     resolved "https://registry.yarnpkg.com/window-size/-/window-size-0.1.0.tgz#5438cd2ea93b202efa3a19fe8887aee7c94f9c9d"
   
+  wkx@^0.4.1:
+    version "0.4.5"
+    resolved "https://registry.yarnpkg.com/wkx/-/wkx-0.4.5.tgz#a85e15a6e69d1bfaec2f3c523be3dfa40ab861d0"
+    dependencies:
+      "@types/node" "*"
+  
   wordwrap@0.0.2:
     version "0.0.2"
     resolved "https://registry.yarnpkg.com/wordwrap/-/wordwrap-0.0.2.tgz#b79669bb42ecb409f83d583cad52ca17eaa1643f"
@@ -7353,7 +7451,7 @@ Lockfile:
 
 Trace: 
   Error: Command failed.
-  Exit code: 2
+  Exit code: 1
   Command: sh
   Arguments: -c npm run build:client && npm run build:server && npm run postbuild
   Directory: /Users/thyb/projects/materia/addons/materia-users-angular6

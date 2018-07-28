@@ -53,7 +53,7 @@ class DefaultCtrl {
               return Object.assign({}, user, userProfile);
             })
             .catch(e => {
-              return Promise.reject(e.message);
+              return Promise.reject(e && e.message || e || 'Unauthorized');
             });
         } else {
           return user;
@@ -87,27 +87,23 @@ class DefaultCtrl {
 
   signin(req, res, next) {
     return new Promise((resolve, reject) => {
-      console.log('before login');
       if (this.config && this.config.method == 'token') {
         req.body.client_id = req.body.email;
         req.body.client_secret = req.body.password;
         req.body.grant_type = 'client_credentials';
-        console.log('before userClientPassword');
         this.passport.authenticate(
           'usersClientPassword',
           { session: false },
           (err, user) => {
-            console.log('after', err, user);
-            if (err) {
-              return reject(err.message);
-			}
-			req.user = user;
+            if (err || !user) {
+              return reject(err && err.message || 'Bad credentials');
+            }
+            req.user = user;
             this.app.usersOAuthServer.token()(req, res, err => {
               if (err) {
                 return reject(err.message);
               }
-              console.log('after token', err);
-              this.app.usersOAuthServer.errorHandler()(req, res, () => {
+              this.app.usersOAuthServer.errorHandler()(req, res, (err) => {
                 if (err) {
                   return reject(err.message);
                 }
@@ -118,7 +114,6 @@ class DefaultCtrl {
         )(req, res, next);
       } else {
         this.passport.authenticate('local', function(err, user, info) {
-          console.log('after authenticate', err, user, info);
           if (err) {
             return reject(err.message);
           }
@@ -126,7 +121,6 @@ class DefaultCtrl {
             return reject(new Error('bad credentials'));
           }
           req.logIn(user, function(err) {
-            console.log('after login', user, err);
             if (err) {
               return reject(err.message);
             }

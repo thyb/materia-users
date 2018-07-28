@@ -22,7 +22,6 @@ export abstract class Auth {
   }
 
   protected verifyLogin(email, password, done) {
-    console.log('verify login', email, password);
     return this.app.entities
       .get('user')
       .getQuery('getByEmail')

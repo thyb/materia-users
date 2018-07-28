@@ -34,7 +34,6 @@ export function addUserProfileRelation(app, config) {
           console.log('ERROR!', e);
         });
     } else {
-      console.log('no entity profile');
       return Promise.resolve();
     }
   }

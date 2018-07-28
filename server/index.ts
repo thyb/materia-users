@@ -8,6 +8,7 @@ import { addUserTokenEntity } from './init/add-user-token.entity';
 import { addUserProfileRelation } from './init/add-user-profile.relation';
 import { addUserProfileQueries } from './init/add-user-profile.queries';
 import { addUserProfileApi } from './init/add-user-profile.api';
+import { addUserTokenQueries } from './init/add-user-token.queries';
 
 export default class UserManagementAddon {
   public static displayName = 'User Management';
@@ -22,9 +23,7 @@ export default class UserManagementAddon {
 
   auth: Auth;
 
-  constructor(private app: any, private config: any, private express: any) {
-
-  }
+  constructor(private app: any, private config: any, private express: any) {}
 
   afterLoadEntities() {
     if (this.config && this.config.method === 'token') {
@@ -42,6 +41,7 @@ export default class UserManagementAddon {
   afterLoadQueries() {
     if (this.config.user_profile_enabled && this.config.user_profile_entity) {
       addUserProfileQueries(this.app, this.config);
+      addUserTokenQueries(this.app);
     }
 
     return Promise.resolve();
@@ -49,7 +49,7 @@ export default class UserManagementAddon {
 
   afterLoadAPI() {
     if (this.config.user_profile_enabled && this.config.user_profile_entity) {
-      addUserProfileApi(this.app, this.config);
+      return addUserProfileApi(this.app, this.config);
     }
     return Promise.resolve();
   }
@@ -59,8 +59,8 @@ export default class UserManagementAddon {
       return Promise.resolve();
     }
 
-    defineAuthenticatedPermission(this.app);
-    defineConnectedUserIdPermission(this.app);
+    defineAuthenticatedPermission(this.app, this.config);
+    defineConnectedUserIdPermission(this.app, this.config);
 
     if (this.config && this.config.method === 'token') {
       this.auth = new TokenAuth(this.app, this.config);

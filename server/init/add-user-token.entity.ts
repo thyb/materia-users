@@ -1,5 +1,5 @@
 export function addUserTokenEntity(app) {
-  app.entities.add(
+  return app.entities.add(
     {
       name: 'user_token',
       fields: [

@@ -211,7 +211,6 @@ export class UserManagementSetupComponent implements OnInit {
     //   email_change_email: this.emailForm.controls.email_change_email.value
     // }
 
-    console.log(setupConfig);
     this.save.emit(setupConfig);
   }
 

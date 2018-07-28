@@ -52,9 +52,7 @@ export class UserManagementViewComponent implements OnInit {
     this.http
       .post<any>(`${this.baseUrl}/entities/user/queries/list`, {})
       .subscribe(res => {
-        console.log(res.data);
         this.users = res.data.map(user => {
-          console.log('user', user);
           return Object.assign({}, user, {
             emailHash: md5(user.email || 'aaa')
           });
@@ -80,7 +78,6 @@ export class UserManagementViewComponent implements OnInit {
   }
 
   signup(user) {
-    console.log(user);
     this.http.post<any>(`${this.apiUrl}/user/signup`, user).subscribe(() => {
       this.refreshList();
       this.refreshConnectedUser();

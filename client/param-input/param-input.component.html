@@ -1,0 +1,25 @@
+<div [formGroup]="form" fxLayout="row">
+	<div fxLayout="row" fxFlex>
+		<mat-checkbox [formControlName]="checkboxName" *ngIf=" ! param.required && showCheckbox && type !== 'boolean'">
+		</mat-checkbox>
+		<mat-form-field *ngIf="type != 'boolean' && actualComponent != 'markdown' && actualComponent != 'article'" fxFlex>
+			<input *ngIf="type != 'boolean' && type != 'date' && type != 'float' && actualComponent != 'textarea'" tabindex="0" matInput
+			 [formControlName]="param.name" [placeholder]="label" [type]="actualComponent" />
+			<input *ngIf="type == 'float'" matInput tabindex="0" type="number" step="any" [placeholder]="label" [formControlName]="param.name"
+			/>
+			<textarea *ngIf="actualComponent == 'textarea'" tabindex="0" matInput [placeholder]="label" [formControlName]="param.name"></textarea>
+			<input *ngIf="type == 'date'" matInput tabindex="0" [formControlName]="param.name" [matDatepicker]="picker" [placeholder]="param.name">
+			<mat-datepicker-toggle *ngIf="type == 'date'" matSuffix [for]="picker"></mat-datepicker-toggle>
+			<mat-datepicker #picker></mat-datepicker>
+			<mat-error *ngIf="requiredError">
+				{{param.name}} is
+				<strong>required</strong>
+			</mat-error>
+		</mat-form-field>
+		<mat-checkbox *ngIf="type == 'boolean'" tabindex="0" [formControlName]="param.name" style="top: 0;">{{label}}</mat-checkbox>
+		<div class="markdown" *ngIf="actualComponent == 'markdown'" fxLayout="column" fxFlex>
+			<label>{{label}}</label>
+			<textarea tabindex="0" [formControlName]="param.name" simplemde="{spellChecker: false, toolbar: ['bold', 'italic', 'heading', '|', 'quote', 'unordered-list', 'ordered-list', '|', 'link', 'image', 'table']}"></textarea>
+		</div>
+	</div>
+</div>

@@ -40,12 +40,42 @@ export class UserManagementViewComponent implements OnInit {
   users: User[] = [];
   nbUsers = 0;
   signupDialog: MatDialogRef<any>;
+  profileFields: any[];
 
   constructor(private dialog: MatDialog, private http: HttpClient) {}
 
   ngOnInit() {
     this.refreshList();
     this.refreshConnectedUser();
+    this.getProfileParams();
+  }
+
+  getProfileParams() {
+    if (
+      this.settings &&
+      this.settings.user_profile_enabled &&
+      this.settings.user_profile_entity
+    ) {
+      return this.http
+        .get<any>(`${this.baseUrl}/infos`)
+        .toPromise()
+        .then(res => {
+          const profileEntity = res.entities.find(
+            entity => entity.name === this.settings.user_profile_entity
+          );
+          this.profileFields = profileEntity.fields.filter(
+            field =>
+              field.name !== 'id_user' &&
+              (!field.primary || (field.primary && !field.autoIncrement))
+          );
+        })
+        .catch(e => {
+          this.profileFields = [];
+        });
+    } else {
+      this.profileFields = [];
+      return Promise.resolve();
+    }
   }
 
   refreshList() {
@@ -79,6 +109,7 @@ export class UserManagementViewComponent implements OnInit {
 
   signup(user) {
     this.http.post<any>(`${this.apiUrl}/user/signup`, user).subscribe(() => {
+      this.closeSignupDialog();
       this.refreshList();
       this.refreshConnectedUser();
     });

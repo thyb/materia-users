@@ -35,6 +35,7 @@
 <materia-signup-form
 	#signupFormTemplate
 
+	[profileFields]="profileFields"
 	(signup)="signup($event)"
 	(cancel)="closeSignupDialog()"
 ></materia-signup-form>

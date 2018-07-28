@@ -15,6 +15,8 @@ import {
   MatListModule,
   MatTooltipModule,
   MatToolbarModule,
+  MatDatepickerModule,
+  MatNativeDateModule,
   MatRadioModule,
   MatStepperModule,
   MatSelectModule,
@@ -27,6 +29,7 @@ import { UserManagementViewComponent } from './user-management/user-management.c
 import { HttpClientModule } from '@angular/common/http';
 import { SignupFormComponent } from './signup-form/signup-form.component';
 import { UserManagementSetupComponent } from './user-management-setup/user-management-setup.component';
+import { ParamInputComponent } from './param-input/param-input.component';
 
 @Addon('@materia/users')
 @NgModule({
@@ -47,6 +50,8 @@ import { UserManagementSetupComponent } from './user-management-setup/user-manag
     MatCheckboxModule,
     MatSelectModule,
     MatToolbarModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
     MatListModule,
     MatRadioModule,
     NgxChartsModule,
@@ -55,9 +60,10 @@ import { UserManagementSetupComponent } from './user-management-setup/user-manag
   declarations: [
     UserManagementViewComponent,
     UserManagementSetupComponent,
-    SignupFormComponent
+    SignupFormComponent,
+    ParamInputComponent
   ],
   exports: [UserManagementViewComponent],
   entryComponents: []
 })
-export class SendgridModule {}
+export class UserManagementModule {}

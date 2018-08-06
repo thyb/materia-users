@@ -8,6 +8,56 @@ class UserModel {
     this.config = this.app.addons.addonsConfig['@materia/users'];
   }
 
+  userInfo(params) {
+	return this.app.entities
+	.get('user')
+	.getQuery('get')
+	.run(
+	  {
+		id_user: params.id_user
+	  },
+	  { raw: true }
+	)
+	.then(user => {
+	  delete user.password;
+	  if (user.key_email !== undefined) {
+		delete user.key_email;
+	  }
+	  if (user.key_password !== undefined) {
+		delete user.key_password;
+	  }
+	  if (user.new_email !== undefined && user.new_email === null) {
+		delete user.new_email;
+	  }
+	  delete user.salt;
+	  if (
+		this.config &&
+		this.config.user_profile_enabled &&
+		this.config.user_profile_entity
+	  ) {
+		const userProfileEntity = this.app.entities.get(
+		  this.config.user_profile_entity
+		);
+		return userProfileEntity
+		  .getQuery('getByUserId')
+		  .run(
+			{
+			  id_user: params.id_user
+			},
+			{ raw: true }
+		  )
+		  .then(userProfile => {
+			return Object.assign({}, user, userProfile);
+		  })
+		  .catch(e => {
+			return Promise.reject(e && e.message || e || 'Unauthorized');
+		  });
+	  } else {
+		return user;
+	  }
+	});
+  }
+
   _translate(message, user, redirect_url) {
     message = message.replace(
       new RegExp(`\\[redirect_url\\]`, 'gi'),
@@ -56,7 +106,7 @@ class UserModel {
     });
     return user
       .getQuery('create')
-      .run(params)
+      .run(params, { raw: true })
       .then(created => {
         let p = Promise.resolve(created);
         if (
@@ -68,11 +118,13 @@ class UserModel {
             this.config.user_profile_entity
           );
           paramsProfile.id_user = created.id_user;
-          p = profileEntity.getQuery('create').run(paramsProfile);
+          p = profileEntity.getQuery('create').run(paramsProfile, {raw: true});
         }
         return p;
       })
       .then(created => {
+		created.email = params.email;
+
         return this.sendVerificationEmail({ id_user: created.id_user })
           .then(() => created)
           .catch(() => created);

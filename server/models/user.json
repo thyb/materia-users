@@ -85,6 +85,20 @@
   ],
   "queries": [
     {
+      "id": "userInfo",
+      "type": "custom",
+      "opts": {
+        "params": [
+          {
+            "name": "id_user",
+            "type": "number",
+            "required": true
+          }
+        ],
+        "action": "userInfo"
+      }
+    },
+    {
       "id": "signup",
       "type": "custom",
       "opts": {
@@ -92,14 +106,14 @@
           {
             "name": "email",
             "required": true,
-			"type": "text",
-			"component": "email"
+            "type": "text",
+            "component": "email"
           },
           {
             "name": "password",
             "required": true,
-			"type": "text",
-			"component": "password"
+            "type": "text",
+            "component": "password"
           }
         ],
         "action": "signup"

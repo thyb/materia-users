@@ -12,7 +12,6 @@ export class TokenAuth extends Auth {
     this.app.usersOAuthServer.exchange(
       oauth2orize.exchange.clientCredentials((client, res, done) => {
         return this.generateToken().then(token => {
-          // TODO: currently only memory based => need to create system entity for access tokens
           const tokenHash = crypto
             .createHash('sha1')
             .update(token)
@@ -26,7 +25,6 @@ export class TokenAuth extends Auth {
               id_user: client.id_user,
               scope: '["*"]'
             });
-          // Return the token
           return done(
             null /* No error*/,
             token /* The generated token*/,
@@ -47,7 +45,9 @@ export class TokenAuth extends Auth {
   }
 
   verifyToken(accessToken, done) {
+    console.log('check accessToken', accessToken);
     if (!accessToken) {
+      console.log('no access token');
       return done(null, false);
     }
     const accessTokenHash = crypto
@@ -66,6 +66,7 @@ export class TokenAuth extends Auth {
       )
       .then(token => {
         if (!token) {
+          console.log('no token #1 found for ' + accessTokenHash);
           return done(null, false);
         } else if (new Date() > token.expires_in) {
           this.clearExpiredTokens();
@@ -76,6 +77,7 @@ export class TokenAuth extends Auth {
         }
       })
       .catch(err => {
+        console.log('no token found #2 for ' + accessTokenHash);
         return done(null, false);
       });
   }

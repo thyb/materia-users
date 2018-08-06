@@ -12,53 +12,9 @@ class DefaultCtrl {
   }
 
   me(req, res, next) {
-    return this.app.entities
-      .get('user')
-      .getQuery('get')
-      .run(
-        {
-          id_user: req.user.id_user
-        },
-        { raw: true }
-      )
-      .then(user => {
-        delete user.password;
-        if (user.key_email !== undefined) {
-          delete user.key_email;
-        }
-        if (user.key_password !== undefined) {
-          delete user.key_password;
-        }
-        if (user.new_email !== undefined && user.new_email === null) {
-          delete user.new_email;
-        }
-        delete user.salt;
-        if (
-          this.config &&
-          this.config.user_profile_enabled &&
-          this.config.user_profile_entity
-        ) {
-          const userProfileEntity = this.app.entities.get(
-            this.config.user_profile_entity
-          );
-          return userProfileEntity
-            .getQuery('getByUserId')
-            .run(
-              {
-                id_user: req.user.id_user
-              },
-              { raw: true }
-            )
-            .then(userProfile => {
-              return Object.assign({}, user, userProfile);
-            })
-            .catch(e => {
-              return Promise.reject(e && e.message || e || 'Unauthorized');
-            });
-        } else {
-          return user;
-        }
-      });
+	  return this.app.entities.get('user').getQuery('userInfo').run({
+		  id_user: req.user.id_user
+	  })
   }
 
   destroy(req, res, next) {
@@ -84,6 +40,7 @@ class DefaultCtrl {
         });
     }
   }
+
 
   signin(req, res, next) {
     return new Promise((resolve, reject) => {
@@ -113,7 +70,7 @@ class DefaultCtrl {
           }
         )(req, res, next);
       } else {
-        this.passport.authenticate('local', function(err, user, info) {
+        this.passport.authenticate('local', {session: false}, function(err, user, info) {
           if (err) {
             return reject(err.message);
           }
@@ -123,7 +80,9 @@ class DefaultCtrl {
           req.logIn(user, function(err) {
             if (err) {
               return reject(err.message);
-            }
+			}
+			
+
             return resolve(user);
           });
         })(req, res, next);

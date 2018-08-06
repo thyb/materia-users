@@ -1,7 +1,16 @@
 export function addUserTokenEntity(app) {
+  const addonsEntitiesPositions = app.addons.addonsConfig.entities || {};
+  let x, y;
+  if (addonsEntitiesPositions && addonsEntitiesPositions.user_token && addonsEntitiesPositions.user_token.x) {
+    x = addonsEntitiesPositions.user_token.x;
+    y = addonsEntitiesPositions.user_token.y;
+  }
+
   return app.entities.add(
     {
       name: 'user_token',
+      x: x,
+      y: y,
       fields: [
         {
           name: 'token',

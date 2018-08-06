@@ -9,6 +9,8 @@ import { addUserProfileRelation } from './init/add-user-profile.relation';
 import { addUserProfileQueries } from './init/add-user-profile.queries';
 import { addUserProfileApi } from './init/add-user-profile.api';
 import { addUserTokenQueries } from './init/add-user-token.queries';
+import { addSocialAccountEntity } from './init/add-social-account.entity';
+import { addSocialAccountQueries } from './init/add-social-account.queries';
 
 export default class UserManagementAddon {
   public static displayName = 'User Management';
@@ -23,27 +25,40 @@ export default class UserManagementAddon {
 
   auth: Auth;
 
-  constructor(private app: any, private config: any, private express: any) {}
+  constructor(private app: any, private config: any, private express: any) { }
 
   afterLoadEntities() {
-    if (this.config && this.config.method === 'token') {
-      addUserTokenEntity(this.app);
+    if (this.config) {
+      const promises = [];
+      if (this.config.method === 'token') {
+        promises.push(addUserTokenEntity(this.app));
+      }
+      if (this.config.social_account) {
+        promises.push(addSocialAccountEntity(this.app));
+      }
+      return Promise.all(promises);
     }
+    return Promise.resolve();
   }
 
   beforeLoadQueries() {
     if (this.config.user_profile_enabled && this.config.user_profile_entity) {
       addUserProfileRelation(this.app, this.config);
     }
+
     return Promise.resolve();
   }
 
   afterLoadQueries() {
     if (this.config.user_profile_enabled && this.config.user_profile_entity) {
       addUserProfileQueries(this.app, this.config);
+    }
+    if (this.config.method === 'token') {
       addUserTokenQueries(this.app);
     }
-
+    if (this.config.social_account) {
+      addSocialAccountQueries(this.app);
+    }
     return Promise.resolve();
   }
 
@@ -71,5 +86,5 @@ export default class UserManagementAddon {
     defineIsUserRolePermissions(this.app);
   }
 
-  uninstall(app) {}
+  uninstall(app) { }
 }

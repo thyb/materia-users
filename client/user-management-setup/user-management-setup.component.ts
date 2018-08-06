@@ -42,6 +42,7 @@ export class UserManagementSetupComponent implements OnInit {
       static_salt: ['', Validators.required],
       user_profile_enabled: new FormControl(false),
       user_profile_entity: new FormControl(''),
+      social_account: new FormControl(false),
       email_verification: new FormControl(false),
       email_addon: new FormControl('')
     });

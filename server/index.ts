@@ -33,9 +33,9 @@ export default class UserManagementAddon {
       if (this.config.method === 'token') {
         promises.push(addUserTokenEntity(this.app));
       }
-      if (this.config.social_account) {
+      // if (this.config.social_account) {
         promises.push(addSocialAccountEntity(this.app));
-      }
+      // }
       return Promise.all(promises);
     }
     return Promise.resolve();

@@ -6,7 +6,7 @@ import {
   EventEmitter,
   ViewChild
 } from '@angular/core';
-import { MatDialog, MatDialogRef } from '@angular/material';
+import { MatDialog, MatDialogRef, MatSnackBar } from '@angular/material';
 import { AddonView } from '@materia/addons';
 import { HttpClient } from '@angular/common/http';
 
@@ -26,23 +26,34 @@ export interface User {
   providers: []
 })
 export class UserManagementViewComponent implements OnInit {
-  @Input() app;
-  @Input() settings;
+  @Input()
+  app;
+  @Input()
+  settings;
 
-  @Input() baseUrl;
-  @Input() apiUrl;
+  @Input()
+  baseUrl;
+  @Input()
+  apiUrl;
 
-  @Output() openSetup = new EventEmitter<void>();
+  @Output()
+  openSetup = new EventEmitter<void>();
 
-  @ViewChild(SignupFormComponent) signupDialogComp: SignupFormComponent;
+  @ViewChild(SignupFormComponent)
+  signupDialogComp: SignupFormComponent;
 
   me: any;
   users: User[] = [];
   nbUsers = 0;
   signupDialog: MatDialogRef<any>;
   profileFields: any[];
+  displayEmailSettings: boolean;
 
-  constructor(private dialog: MatDialog, private http: HttpClient) {}
+  constructor(
+    private dialog: MatDialog,
+    private http: HttpClient,
+    private snackbar: MatSnackBar
+  ) {}
 
   ngOnInit() {
     this.refreshList();
@@ -92,15 +103,35 @@ export class UserManagementViewComponent implements OnInit {
   }
 
   refreshConnectedUser() {
-    this.http.get<any>(`${this.apiUrl}/user/me`).subscribe(res => {
-      this.me = res;
-    }, () => (this.me = null));
+    this.http.get<any>(`${this.apiUrl}/user/me`).subscribe(
+      res => {
+        this.me = res;
+      },
+      () => (this.me = null)
+    );
   }
 
+  configureEmails() {
+    this.displayEmailSettings = true;
+  }
+  hideEmailSettings() {
+    this.displayEmailSettings = false;
+  }
   openSignupDialog() {
     this.signupDialog = this.dialog.open(this.signupDialogComp.template, {
       panelClass: 'no-padding'
     });
+  }
+
+  saveEmailSettings(settings) {
+    this.http
+      .post<any>(`${this.baseUrl}/addons/@materia/users/setup`, settings)
+      .subscribe(res => {
+        this.snackbar.open('Settings saved!', null, {
+          duration: 3000
+        });
+        this.hideEmailSettings();
+      });
   }
 
   closeSignupDialog() {

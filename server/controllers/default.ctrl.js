@@ -12,9 +12,12 @@ class DefaultCtrl {
   }
 
   me(req, res, next) {
-	  return this.app.entities.get('user').getQuery('userInfo').run({
-		  id_user: req.user.id_user
-	  })
+    return this.app.entities
+      .get('user')
+      .getQuery('userInfo')
+      .run({
+        id_user: req.user.id_user
+      });
   }
 
   destroy(req, res, next) {
@@ -41,53 +44,71 @@ class DefaultCtrl {
     }
   }
 
-
   signin(req, res, next) {
-    return new Promise((resolve, reject) => {
-      if (this.config && this.config.method == 'token') {
-        req.body.client_id = req.body.email;
-        req.body.client_secret = req.body.password;
-        req.body.grant_type = 'client_credentials';
-        this.passport.authenticate(
-          'usersClientPassword',
-          { session: false },
-          (err, user) => {
-            if (err || !user) {
-              return reject(err && err.message || 'Bad credentials');
-            }
-            req.user = user;
-            this.app.usersOAuthServer.token()(req, res, err => {
-              if (err) {
-                return reject(err.message);
-              }
-              this.app.usersOAuthServer.errorHandler()(req, res, (err) => {
-                if (err) {
-                  return reject(err.message);
-                }
-                return resolve(user);
-              });
+    if (this.config && this.config.method == 'token') {
+      req.body.client_id = req.body.email;
+      req.body.client_secret = req.body.password;
+      req.body.grant_type = 'client_credentials';
+      this.passport.authenticate(
+        'usersClientPassword',
+        { session: false },
+        (err, user) => {
+          if (err || !user) {
+            return res.status(401).send({
+              error: true,
+              message: (err && err.message) || 'Bad credentials'
             });
           }
-        )(req, res, next);
-      } else {
-        this.passport.authenticate('local', {session: false}, function(err, user, info) {
-          if (err) {
-            return reject(err.message);
-          }
-          if (!user) {
-            return reject(new Error('bad credentials'));
-          }
-          req.logIn(user, function(err) {
+          req.user = user;
+          this.app.usersOAuthServer.token()(req, res, err => {
             if (err) {
-              return reject(err.message);
-			}
-			
-
-            return resolve(user);
+              res.status(401).json({
+                error: true,
+                message: err.message
+              });
+            }
+            this.app.usersOAuthServer.errorHandler()(req, res, err => {
+              if (err) {
+                res.status(401).json({
+                  error: true,
+                  message: err.message
+                });
+              } else {
+                res.status(200).json(user);
+              }
+            });
           });
-        })(req, res, next);
-      }
-    });
+        }
+      )(req, res, next);
+    } else {
+      this.passport.authenticate('local', { session: false }, function(
+        err,
+        user
+      ) {
+        if (err) {
+          res.status(401).json({
+            error: true,
+            message: err.message
+          });
+        }
+        if (!user) {
+          res.status(401).json({
+            error: true,
+            message: 'bad credentials'
+          });
+        }
+        req.logIn(user, function(err) {
+          if (err) {
+            res.status(401).json({
+              error: true,
+              message: err.message
+            });
+          } else {
+            res.status(200).json(user);
+          }
+        });
+      })(req, res, next);
+    }
   }
 
   signup(req, res, next) {

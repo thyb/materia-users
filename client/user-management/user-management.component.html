@@ -10,14 +10,15 @@
 					Users
 				</span>
 				<span fxFlex></span>
-				<button style="margin-right: 8px;" mat-button>Configure emails</button>
+				<button *ngIf="!displayEmailSettings && settings.email_verification && settings.email_addon" style="margin-right: 8px;" (click)="configureEmails()" mat-button>Configure emails</button>
 				<button mat-mini-fab (click)="openSignupDialog()" matTooltip="New User" matTooltipPosition="left" style="width: 31px; height: 31px;">
 					<mat-icon style="position: relative; top: -6px; left: -4px;">add</mat-icon>
 				</button>
 			</mat-toolbar>
 			<div *ngIf="users && users.length; else noUser" style="border-top: 1px solid #EEE; overflow-y: auto;" fxLayout="column" fxFlex>
 				<div fxLayout="row" fxLayoutAlign="start center" *ngFor="let user of users" style="border-bottom: 1px solid #EEE; cursor: pointer;min-height: 40px">
-					<img [src]="'http://www.gravatar.com/avatar/' + user.emailHash + '?d=mm&s=32'" class="avatar" style="margin: 0 8px; width:32px; height:32px;border-radius: 100%" />
+					<img [src]="'http://www.gravatar.com/avatar/' + user.emailHash + '?d=mm&s=32'" class="avatar" style="margin: 0 8px; width:32px; height:32px;border-radius: 100%"
+					/>
 					<div style="color: #999; padding-top: 0">{{user.email}}</div>
 				</div>
 			</div>
@@ -25,17 +26,27 @@
 				<div fxFlex fxLayout="column" fxLayoutAlign="center center" class="no-users">
 					<span>There is no users registered yet</span>
 					<div>
-						<button (click)="openSignupDialog()" mat-raised-button color="primary" [style.margin]="'15px'" [style.color]="'white'">Create a user</button>
+						<button (click)="openSignupDialog()" mat-raised-button color="primary" [style.margin]="'15px'" [style.color]="'white'">Create
+							a user</button>
 					</div>
 				</div>
 			</ng-template>
 		</mat-card>
+		<div style="margin: 8px;" *ngIf="displayEmailSettings" fxLayout="column" fxFlex>
+			<mat-toolbar fxLayout="row" fxLayoutAlign="start center">
+				<button mat-icon-button (click)="hideEmailSettings()" matTooltip="Hide email settings" matTooltipPosition="right">
+					<mat-icon>arrow_back</mat-icon>
+				</button>
+				<mat-icon>mail</mat-icon>
+				<span>
+					Emails
+				</span>
+				<span fxFlex></span>
+			</mat-toolbar>
+			<materia-user-management-email-settings [settings]="settings" [baseUrl]="baseUrl"
+				(hide)="hideEmailSettings()" (save)="saveEmailSettings($event)" fxFlex style="overflow-y: auto;">
+			</materia-user-management-email-settings>
+		</div>
 	</div>
 </div>
-<materia-signup-form
-	#signupFormTemplate
-
-	[profileFields]="profileFields"
-	(signup)="signup($event)"
-	(cancel)="closeSignupDialog()"
-></materia-signup-form>
+<materia-signup-form #signupFormTemplate [profileFields]="profileFields" (signup)="signup($event)" (cancel)="closeSignupDialog()"></materia-signup-form>

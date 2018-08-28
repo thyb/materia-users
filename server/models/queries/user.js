@@ -9,58 +9,58 @@ class UserModel {
   }
 
   userInfo(params) {
-	return this.app.entities
-	.get('user')
-	.getQuery('get')
-	.run(
-	  {
-		id_user: params.id_user
-	  },
-	  { raw: true }
-	)
-	.then(user => {
-	  delete user.password;
-	  if (user.key_email !== undefined) {
-		delete user.key_email;
-	  }
-	  if (user.key_password !== undefined) {
-		delete user.key_password;
-	  }
-	  if (user.new_email !== undefined && user.new_email === null) {
-		delete user.new_email;
-	  }
-	  delete user.salt;
-	  if (
-		this.config &&
-		this.config.user_profile_enabled &&
-		this.config.user_profile_entity
-	  ) {
-		const userProfileEntity = this.app.entities.get(
-		  this.config.user_profile_entity
-		);
-		return userProfileEntity
-		  .getQuery('getByUserId')
-		  .run(
-			{
-			  id_user: params.id_user
-			},
-			{ raw: true }
-		  )
-		  .then(userProfile => {
-			return Object.assign({}, user, userProfile);
-		  })
-		  .catch(e => {
-			return Promise.reject(e && e.message || e || 'Unauthorized');
-		  });
-	  } else {
-		return user;
-	  }
-	});
+    return this.app.entities
+      .get('user')
+      .getQuery('get')
+      .run(
+        {
+          id_user: params.id_user
+        },
+        { raw: true }
+      )
+      .then(user => {
+        delete user.password;
+        if (user.key_email !== undefined) {
+          delete user.key_email;
+        }
+        if (user.key_password !== undefined) {
+          delete user.key_password;
+        }
+        if (user.new_email !== undefined && user.new_email === null) {
+          delete user.new_email;
+        }
+        delete user.salt;
+        if (
+          this.config &&
+          this.config.user_profile_enabled &&
+          this.config.user_profile_entity
+        ) {
+          const userProfileEntity = this.app.entities.get(
+            this.config.user_profile_entity
+          );
+          return userProfileEntity
+            .getQuery('getByUserId')
+            .run(
+              {
+                id_user: params.id_user
+              },
+              { raw: true }
+            )
+            .then(userProfile => {
+              return Object.assign({}, user, userProfile);
+            })
+            .catch(e => {
+              return Promise.reject((e && e.message) || e || 'Unauthorized');
+            });
+        } else {
+          return user;
+        }
+      });
   }
 
   _translate(message, user, redirect_url) {
     message = message.replace(
-      new RegExp(`\\[redirect_url\\]`, 'gi'),
+      new RegExp(`\\{{redirect_url\\}}`, 'gi'),
       redirect_url
     );
     this.app.entities
@@ -73,7 +73,7 @@ class UserModel {
           field.name != 'key' &&
           field.name != 'verified'
         ) {
-          let e = new RegExp(`\\[user.${field.name}\\]`, 'gi');
+          let e = new RegExp(`\\{\\{user.${field.name}\\}\\}`, 'gi');
           message = message.replace(e, user[field.name]);
         }
       });
@@ -118,65 +118,68 @@ class UserModel {
             this.config.user_profile_entity
           );
           paramsProfile.id_user = created.id_user;
-          p = profileEntity.getQuery('create').run(paramsProfile, {raw: true});
+          p = profileEntity
+            .getQuery('create')
+            .run(paramsProfile, { raw: true });
         }
         return p;
       })
       .then(created => {
-		created.email = params.email;
-
-        return this.sendVerificationEmail({ id_user: created.id_user })
-          .then(() => created)
-          .catch(() => created);
+        created.email = params.email;
+        return created;
+        // return this.sendVerificationEmail({ id_user: created.id_user })
+        //   .then(() => created)
+        //   .catch(() => created);
       });
   }
 
   sendVerificationEmail(params) {
-    let userEntity = this.app.entities.get('user');
+    if (this.config && this.config.email_addon) {
+      return this.userInfo(params).then(user => {
+        let verify_url = `${this.app.server.getBaseUrl()}/user/verify/${
+          user.id_user
+        }/${user.key_email}`;
 
-    if (
-      this.config.email_verification &&
-      (this.config.type == 'email' || this.config.type == 'both')
-    ) {
-      return userEntity
-        .getQuery('get')
-        .run(params, { raw: true })
-        .then(user => {
-          let verify_url = `${this.app.server.getBaseUrl()}/user/verify/${
-            user.id_user
-          }/${user.key_email}`;
-          let message = this._translate(
-            this.config.email_signup.message,
-            user,
-            verify_url
-          );
-          let subject = this._translate(
-            this.config.email_signup.subject,
-            user,
-            verify_url
-          );
-          if (user.new_email) {
-            message = this._translate(
-              this.config.email_change_email.message,
-              user,
-              verify_url
-            );
-            subject = this._translate(
-              this.config.email_change_email.subject,
-              user,
-              verify_url
-            );
-          }
-          return this.app.entities
-            .get(this.config.email_action.entity)
-            .getQuery(this.config.email_action.query)
-            .run({
-              to: user.email,
-              subject: subject,
-              body: message
+        let templateId = this.config.templates && this.config.templates.signup;
+        if (user.new_email) {
+          templateId =
+            this.config.templates && this.config.templates.change_email;
+        }
+        let entity,
+          query = 'sendTemplate',
+          params = {
+            to: user.email,
+            templateId: templateId,
+            subject: subject,
+            variables: Object.assign({}, user, {
+              url_email_verification: verify_url
             })
-            .then(() => user);
-        });
+          };
+
+        if (this.config.email_addon == '@materia/mailjet') {
+          entity = 'mailjet_message';
+        } else if (this.config.email_addon == '@materia/sendgrid') {
+          entity = 'sendgrid';
+        }
+
+        const emailEntity = this.app.entities.get(entity);
+        if (!emailEntity) {
+          return Promise.reject(
+            'addon ' +
+              this.config.email_addon +
+              ' is not correctly installed: Entity not found.'
+          );
+        }
+        const emailQuery = emailEntity.getQuery(query);
+        if (!emailQuery) {
+          return Promise.reject(
+            'addon ' +
+              this.config.email_addon +
+              ' is not correctly installed: Query not found.'
+          );
+        }
+        return emailQuery.run(params).then(() => user);
+      });
     } else {
       return Promise.reject('Email verification disabled');
     }

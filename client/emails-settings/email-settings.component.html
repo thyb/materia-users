@@ -1,0 +1,58 @@
+<form [formGroup]="emailForm">
+	<mat-accordion>
+		<mat-expansion-panel #signupPanel [expanded]="true" fxLayout="column">
+			<mat-expansion-panel-header>
+				Signup
+			</mat-expansion-panel-header>
+
+			<div class="panel-content" fxLayout="column">
+				<mat-form-field>
+					<mat-select placeholder="Template" formControlName="template_signup">
+						<mat-option *ngFor="let t of templates" [value]="t.id">{{ t.name }} ({{t.id}})</mat-option>
+					</mat-select>
+				</mat-form-field>
+				<mat-form-field>
+					<input matInput placeholder="Redirect URL" formControlName="redirect_signup">
+				</mat-form-field>
+			</div>
+		</mat-expansion-panel>
+
+		<mat-expansion-panel #changeEmailPanel>
+			<mat-expansion-panel-header>
+				Change email
+			</mat-expansion-panel-header>
+
+			<div class="panel-content" fxLayout="column">
+				<mat-form-field>
+					<mat-select placeholder="Template" formControlName="template_change_email">
+						<mat-option *ngFor="let t of templates" [value]="t.id">{{ t.name }} ({{t.id}})</mat-option>
+					</mat-select>
+				</mat-form-field>
+				<mat-form-field>
+					<input matInput placeholder="Redirect URL" formControlName="redirect_change_email">
+				</mat-form-field>
+			</div>
+		</mat-expansion-panel>
+
+		<mat-expansion-panel #lostPasswordPanel fxLayout="column">
+			<mat-expansion-panel-header>
+				Lost password
+			</mat-expansion-panel-header>
+			<div class="panel-content" fxLayout="column">
+
+				<mat-form-field>
+					<mat-select placeholder="Template" formControlName="template_lost_password">
+						<mat-option *ngFor="let t of templates" [value]="t.id">{{ t.name }} ({{t.id}})</mat-option>
+					</mat-select>
+				</mat-form-field>
+				<mat-form-field>
+					<input matInput placeholder="Redirect URL" formControlName="redirect_lost_password">
+				</mat-form-field>
+			</div>
+		</mat-expansion-panel>
+	</mat-accordion>
+	<div style="margin: 16px 0; text-align: center;">
+		<button mat-raised-button color="primary" (click)="saveEmailSettings()" style="margin-right: 8px">Save</button>
+		<button mat-raised-button (click)="hide.emit()">Cancel</button>
+	</div>
+</form>

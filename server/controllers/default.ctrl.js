@@ -114,7 +114,7 @@ class DefaultCtrl {
   signup(req, res, next) {
     let params = Object.assign({}, req.query, req.body, req.params);
     let user = this.app.entities.get('user');
-    return user
+    user
       .getQuery('signup')
       .run(params)
       .then(() => {
@@ -128,7 +128,7 @@ class DefaultCtrl {
 
   logout(req, res, next) {
     req.logout();
-    return Promise.resolve();
+    res.status(200).json({logout: true})
   }
 
   //Params: new_email

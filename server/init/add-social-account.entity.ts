@@ -1,5 +1,5 @@
 export function addSocialAccountEntity(app) {
-  const addonsEntitiesPositions = app.addons.addonsConfig.entities || {};
+  const addonsEntitiesPositions = app.config.get(null, 'entitiesPosition') || {};
   let x, y;
   if (
     addonsEntitiesPositions &&

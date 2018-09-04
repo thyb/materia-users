@@ -1,5 +1,5 @@
 export function addUserTokenEntity(app) {
-  const addonsEntitiesPositions = app.addons.addonsConfig.entities || {};
+  const addonsEntitiesPositions = app.config.get(null, 'entitiesPosition') || {};
   let x, y;
   if (addonsEntitiesPositions && addonsEntitiesPositions.user_token && addonsEntitiesPositions.user_token.x) {
     x = addonsEntitiesPositions.user_token.x;

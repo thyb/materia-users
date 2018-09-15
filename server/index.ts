@@ -15,7 +15,7 @@ import { addSocialAccountQueries } from './init/add-social-account.queries';
 export default class UserManagementAddon {
   public static displayName = 'User Management';
   public static logo =
-    'https://thyb.github.io/materia-website-content/logo/addons/users.png';
+    'https://materiahq.github.io/materia-website-content/logo/addons/users.png';
 
   public static installSettings = false;
 

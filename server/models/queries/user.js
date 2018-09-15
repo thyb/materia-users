@@ -127,14 +127,14 @@ class UserModel {
       .then(created => {
         created.email = params.email;
         return created;
-        // return this.sendVerificationEmail({ id_user: created.id_user })
-        //   .then(() => created)
-        //   .catch(() => created);
+        return this.sendVerificationEmail({ id_user: created.id_user })
+          .then(() => created)
+          .catch(() => created);
       });
   }
 
   sendVerificationEmail(params) {
-    if (this.config && this.config.email_addon) {
+    if (this.config && this.config.email_verification && this.config.email_addon) {
       return this.userInfo(params).then(user => {
         let verify_url = `${this.app.server.getBaseUrl()}/user/verify/${
           user.id_user

@@ -25,7 +25,7 @@ export default class UserManagementAddon {
 
   auth: Auth;
 
-  constructor(private app: any, private config: any, private express: any) { }
+  constructor(private app: any, private config: any, private express: any) {}
 
   afterLoadEntities() {
     if (this.config) {
@@ -34,7 +34,7 @@ export default class UserManagementAddon {
         promises.push(addUserTokenEntity(this.app));
       }
       // if (this.config.social_account) {
-        promises.push(addSocialAccountEntity(this.app));
+      promises.push(addSocialAccountEntity(this.app));
       // }
       return Promise.all(promises);
     }
@@ -86,5 +86,5 @@ export default class UserManagementAddon {
     defineIsUserRolePermissions(this.app);
   }
 
-  uninstall(app) { }
+  uninstall(app) {}
 }

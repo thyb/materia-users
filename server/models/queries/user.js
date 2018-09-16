@@ -126,7 +126,6 @@ class UserModel {
       })
       .then(created => {
         created.email = params.email;
-        return created;
         return this.sendVerificationEmail({ id_user: created.id_user })
           .then(() => created)
           .catch(() => created);

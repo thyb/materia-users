@@ -308,6 +308,8 @@ class DefaultCtrl {
       .then(redirect => {
         res.redirect(redirect);
         return Promise.resolve();
+      }).catch(err => {
+        return Promise.reject(err);
       });
   }
 }

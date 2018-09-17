@@ -234,12 +234,14 @@ class UserModel {
             .run(updates)
             .then(() => {
               if (isSignup) {
-                return this.config.email_signup.redirect_url;
+                return this.config.redirect_signup;
               } else {
-                return this.config.email_change_email.redirect_url;
+                return this.config.redirect_change_email;
               }
             });
-        } else return Promise.reject('User email found but the key mismatch.');
+        } else {
+          return Promise.reject('User email found but the key mismatch.');
+        }
       });
   }
 

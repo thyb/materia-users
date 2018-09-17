@@ -86,9 +86,8 @@ export class EmailSettingsComponent implements OnInit {
   refreshTemplates() {
     if (this.settings.email_addon === '@materia/mailjet') {
       this.http
-        .post<any>(`${this.baseUrl}/entities/mailjet_template/queries/list`, {})
+        .post<any>(`${this.baseUrl}/entities/mailjet_template/queries/list`, {limit: 1000})
         .subscribe(data => {
-          console.log('templates', data.data.filter(row => row.OwnerId !== 1));
           this.templates = data.data
             .filter(row => row.OwnerId !== 1)
             .map(row => {

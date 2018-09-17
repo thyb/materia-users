@@ -133,52 +133,69 @@ class UserModel {
   }
 
   sendVerificationEmail(params) {
-    if (this.config && this.config.email_verification && this.config.email_addon) {
-      return this.userInfo(params).then(user => {
-        let verify_url = `${this.app.server.getBaseUrl()}/user/verify/${
-          user.id_user
-        }/${user.key_email}`;
+    if (
+      this.config &&
+      this.config.email_verification &&
+      this.config.email_addon
+    ) {
+      return this.app.entities
+        .get('user')
+        .getQuery('get')
+        .run(
+          {
+            id_user: params.id_user
+          },
+          { raw: true }
+        )
+        .then(user => {
+          return this.userInfo(params).then(userSecure => {
+            let verify_url = `${this.app.server.getBaseUrl()}/user/verify/${
+              user.id_user
+            }/${user.key_email}`;
 
-        let templateId = this.config.templates && this.config.templates.signup;
-        if (user.new_email) {
-          templateId =
-            this.config.templates && this.config.templates.change_email;
-        }
-        let entity,
-          query = 'sendTemplate',
-          params = {
-            to: user.email,
-            templateId: templateId,
-            subject: subject,
-            variables: Object.assign({}, user, {
-              url_email_verification: verify_url
-            })
-          };
+            let templateId = this.config.template_signup;
+            let subject = this.config.subject_signup;
+            if (user.new_email) {
+              templateId = this.config.template_change_email;
+              subject = this.config.subject_change_email;
+            }
+            let entity,
+              query = 'sendTemplate',
+              params = {
+                to: user.email,
+                templateId: templateId,
+                subject: subject,
+                variables: Object.assign({}, userSecure, {
+                  url_email_verification: verify_url
+                })
+              };
 
-        if (this.config.email_addon == '@materia/mailjet') {
-          entity = 'mailjet_message';
-        } else if (this.config.email_addon == '@materia/sendgrid') {
-          entity = 'sendgrid';
-        }
+            if (this.config.email_addon == '@materia/mailjet') {
+              entity = 'mailjet_message';
+            } else if (this.config.email_addon == '@materia/sendgrid') {
+              entity = 'sendgrid';
+            }
 
-        const emailEntity = this.app.entities.get(entity);
-        if (!emailEntity) {
-          return Promise.reject(
-            'addon ' +
-              this.config.email_addon +
-              ' is not correctly installed: Entity not found.'
-          );
-        }
-        const emailQuery = emailEntity.getQuery(query);
-        if (!emailQuery) {
-          return Promise.reject(
-            'addon ' +
-              this.config.email_addon +
-              ' is not correctly installed: Query not found.'
-          );
-        }
-        return emailQuery.run(params).then(() => user);
-      });
+            const emailEntity = this.app.entities.get(entity);
+            if (!emailEntity) {
+              return Promise.reject(
+                'addon ' +
+                  this.config.email_addon +
+                  ' is not correctly installed: Entity not found.'
+              );
+            }
+            const emailQuery = emailEntity.getQuery(query);
+            if (!emailQuery) {
+              return Promise.reject(
+                'addon ' +
+                  this.config.email_addon +
+                  ' is not correctly installed: Query not found.'
+              );
+			}
+			console.log(params);
+            return emailQuery.run(params).then(() => userSecure);
+          });
+        });
     } else {
       return Promise.reject('Email verification disabled');
     }
@@ -257,33 +274,39 @@ class UserModel {
         id_user: user.id_user
       })
       .then(() => {
-        let redirect_url = this._buildRedirectUri(
-          this.config.email_lost_password.redirect_url,
-          {
-            id_user: user.id_user,
-            key: key
-          }
-        );
-        let subject = this._translate(
-          this.config.email_lost_password.subject,
-          user,
-          redirect_url
-        );
-        let message = this._translate(
-          this.config.email_lost_password.message,
-          user,
-          redirect_url
-        );
+        return this.userInfo(params).then(userSecure => {
+          let redirect_url = this._buildRedirectUri(
+            this.config.redirect_lost_password,
+            {
+              id_user: user.id_user,
+              key: key
+            }
+          );
+          let subject = this._translate(
+            this.config.subject_lost_password,
+            user,
+            redirect_url
+          );
 
-        //send the email
-        return this.app.entities
-          .get(this.config.email_action.entity)
-          .getQuery(this.config.email_action.query)
-          .run({
-            to: user.email,
-            subject: subject,
-            body: message
-          });
+          let entity, query, params;
+          if (this.config.email_addon == '@materia/mailjet') {
+            entity = 'mailjet_message';
+            query = 'sendTemplate';
+            params = {
+              to: user.email,
+              templateId: this.config.template_lost_password,
+              subject: this.config.subject_lost_password,
+              variables: Object.assign({}, userSecure, {
+                url_email_verification: verify_url
+              })
+            };
+          }
+          //send the email
+          return this.app.entities
+            .get(entity)
+            .getQuery(query)
+            .run(params);
+        });
       });
   }
 
@@ -297,19 +320,15 @@ class UserModel {
         'Email verification not configured - Lost password functionality disabled'
       );
     }
-    let userPromise = Promise.resolve();
-    if (this.config.type == 'email' || this.config.type == 'both') {
-      userPromise = this.app.entities
-        .get('user')
-        .getQuery('getByEmail')
-        .run(
-          {
-            email: params.email
-          },
-          { raw: true }
-        );
-    }
-    return userPromise
+    userPromise = this.app.entities
+      .get('user')
+      .getQuery('getByEmail')
+      .run(
+        {
+          email: params.email
+        },
+        { raw: true }
+      )
       .then(user => {
         if (user) {
           return this._execLostPassword(user);

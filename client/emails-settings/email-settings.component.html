@@ -7,6 +7,10 @@
 
 			<div class="panel-content" fxLayout="column">
 				<mat-form-field>
+					<input matInput placeholder="Subject" formControlName="subject_signup">
+				</mat-form-field>
+
+				<mat-form-field>
 					<mat-select placeholder="Template" formControlName="template_signup">
 						<mat-option *ngFor="let t of templates" [value]="t.id">{{ t.name }} ({{t.id}})</mat-option>
 					</mat-select>
@@ -24,6 +28,10 @@
 
 			<div class="panel-content" fxLayout="column">
 				<mat-form-field>
+					<input matInput placeholder="Subject" formControlName="subject_change_email">
+				</mat-form-field>
+
+				<mat-form-field>
 					<mat-select placeholder="Template" formControlName="template_change_email">
 						<mat-option *ngFor="let t of templates" [value]="t.id">{{ t.name }} ({{t.id}})</mat-option>
 					</mat-select>
@@ -40,6 +48,9 @@
 			</mat-expansion-panel-header>
 			<div class="panel-content" fxLayout="column">
 
+				<mat-form-field>
+					<input matInput placeholder="Subject" formControlName="subject_lost_password">
+				</mat-form-field>
 				<mat-form-field>
 					<mat-select placeholder="Template" formControlName="template_lost_password">
 						<mat-option *ngFor="let t of templates" [value]="t.id">{{ t.name }} ({{t.id}})</mat-option>

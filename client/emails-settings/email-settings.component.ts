@@ -36,10 +36,7 @@ export class EmailSettingsComponent implements OnInit {
   @ViewChild('lostPasswordPanel')
   lostPasswordPanel: MatExpansionPanel;
 
-  constructor(
-    private http: HttpClient,
-    private form: FormBuilder
-  ) {}
+  constructor(private http: HttpClient, private form: FormBuilder) {}
 
   private getSettingsProperty(property, defaultValue) {
     return (this.settings && this.settings[property]) || defaultValue;
@@ -66,6 +63,9 @@ export class EmailSettingsComponent implements OnInit {
       email_addon: [this.getSettingsProperty('email_addon', false)],
       template_signup: [this.getSettingsProperty('template_signup', '')],
       redirect_signup: [this.getSettingsProperty('redirect_signup', '')],
+      subject_signup: [this.getSettingsProperty('subject_signup', '')],
+      subject_lost_password: [this.getSettingsProperty('subject_lost_password', '')],
+      subject_change_email: [this.getSettingsProperty('subject_change_email', '')],
       template_lost_password: [
         this.getSettingsProperty('template_lost_password', '')
       ],

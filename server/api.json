@@ -1,6 +1,22 @@
 [
   {
     "method": "post",
+    "url": "/user/me/send_verification_email",
+    "controller": "default",
+    "action": "sendVerificationEmail",
+    "parent": "User management",
+    "permissions": ["Authenticated"],
+    "params": [
+      {
+        "name": "id_user",
+        "type": "text",
+        "required": true,
+        "component": "input"
+      }
+    ]
+  },
+  {
+    "method": "post",
     "url": "/user/signin",
     "controller": "default",
     "action": "signin",

@@ -311,5 +311,13 @@ class DefaultCtrl {
         return Promise.reject(err);
       });
   }
+
+  sendVerificationEmail(req, res) {
+    let params = Object.assign({}, req.query, req.body, req.params);
+    return this.app.entities
+      .get('user')
+      .getQuery('sendVerificationEmail')
+      .run(params)
+  }
 }
 module.exports = DefaultCtrl;

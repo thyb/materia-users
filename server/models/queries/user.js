@@ -149,6 +149,9 @@ class UserModel {
         )
         .then(user => {
           return this.userInfo(params).then(userSecure => {
+            if (userSecure.verified && ! user.new_email) {
+              return Promise.reject(`Email '${userSecure.email}' has already been verified`);
+            }
             let verify_url = `${this.app.server.getBaseUrl()}/user/verify/${
               user.id_user
             }/${user.key_email}`;

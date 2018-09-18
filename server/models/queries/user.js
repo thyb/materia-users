@@ -162,7 +162,7 @@ class UserModel {
             let entity,
               query = 'sendTemplate',
               params = {
-                to: user.email,
+                to: user.new_email ? user.new_email : user.email,
                 templateId: templateId,
                 subject: subject,
                 variables: Object.assign({}, userSecure, {

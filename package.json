@@ -21,7 +21,7 @@
     "test": "ng test",
     "build:prod": "npm run build:client && npm run build:server && npm run postbuild",
     "build:server": "tsc -p ./tsconfig.server.json && ncp ./server/controllers ./dist/server/controllers && ncp ./server/models ./dist/server/models && ncp ./server/api.json ./dist/server/api.json",
-    "build:client": "ng build --prod sendgrid",
+    "build:client": "ng build --prod",
     "postbuild": "node scripts/postbuild.js",
     "clean": "rimraf dist"
   },

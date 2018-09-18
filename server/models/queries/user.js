@@ -191,8 +191,7 @@ class UserModel {
                   this.config.email_addon +
                   ' is not correctly installed: Query not found.'
               );
-			}
-			console.log(params);
+            }
             return emailQuery.run(params).then(() => userSecure);
           });
         });
@@ -276,10 +275,9 @@ class UserModel {
         id_user: user.id_user
       })
       .then(() => {
-        return this.userInfo(params).then(userSecure => {
+        return this.userInfo(user).then(userSecure => {
           let redirect_url = this._buildRedirectUri(
-            this.config.redirect_lost_password,
-            {
+            this.config.redirect_lost_password, {
               id_user: user.id_user,
               key: key
             }
@@ -299,7 +297,7 @@ class UserModel {
               templateId: this.config.template_lost_password,
               subject: this.config.subject_lost_password,
               variables: Object.assign({}, userSecure, {
-                url_email_verification: verify_url
+                url_lost_password: redirect_url
               })
             };
           }
@@ -317,49 +315,29 @@ class UserModel {
    * @param {*} params
    */
   lostPassword(params) {
-    if (!this.config.email_verification) {
+    if ( ! this.config.email_verification ) {
       return Promise.reject(
         'Email verification not configured - Lost password functionality disabled'
       );
     }
-    userPromise = this.app.entities
+    return this.app.entities
       .get('user')
       .getQuery('getByEmail')
-      .run(
-        {
-          email: params.email
-        },
-        { raw: true }
+      .run({
+        email: params.email
+      }, 
+      { raw: true }
       )
       .then(user => {
         if (user) {
           return this._execLostPassword(user);
         } else {
-          if (this.config.type == 'both') {
-            return this.app.entities
-              .get('user')
-              .getQuery('getByUsername')
-              .run(
-                {
-                  username: params.email
-                },
-                { raw: true }
-              );
-          } else {
-            return Promise.reject(new Error('Invalid email'));
-          }
-        }
-      })
-      .then(user => {
-        if (user) {
-          this._execLostPassword(user);
-        } else {
-          return Promise.reject(new Errror('Invalid email'));
+          return Promise.reject(new Error('Invalid email'));
         }
       })
       .then(() => {
         return { emailSent: true };
-      });
+      }).catch((err) => Promise.reject(err.message))
   }
 }
 module.exports = UserModel;

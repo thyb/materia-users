@@ -127,7 +127,7 @@ class DefaultCtrl {
   }
 
   logout(req, res, next) {
-    req.logout();
+    req.logOut();
     res.status(200).json({logout: true})
   }
 
@@ -201,10 +201,9 @@ class DefaultCtrl {
       params.key &&
       params.id_user &&
       params.new_password &&
-      this.config.email_verification &&
-      (this.config.type == 'email' || this.config.type == 'both')
+      this.config.email_verification
     ) {
-      return userEntity
+      userEntity
         .getQuery('get')
         .run(
           {
@@ -222,7 +221,7 @@ class DefaultCtrl {
               .run({
                 password: newPasswordEncrypted,
                 key_password: null,
-                id_user: user.id_user
+                id_user: params.id_user
               })
               .then(() => user);
           } else return Promise.reject('key does not match');
@@ -233,7 +232,7 @@ class DefaultCtrl {
           return this.signin(req, res, next);
         });
     } else {
-      return res.status(500).send({
+      res.status(500).send({
         error: true,
         message: 'Missing required parameter'
       });

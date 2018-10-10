@@ -1,6 +1,6 @@
 {
   "name": "@materia/users",
-  "version": "1.0.0",
+  "version": "1.0.0-beta.1",
   "description": "",
   "author": "thibaud.arnault@gmail.com",
   "license": "MIT",
@@ -26,6 +26,7 @@
     "clean": "rimraf dist"
   },
   "peerDependencies": {
+    "@materia/addons": "1.0.0-beta.2",
     "@angular/cdk": "^6.4.0",
     "@angular/common": "^6.0.9",
     "@angular/core": "^6.0.9",

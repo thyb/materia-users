@@ -198,6 +198,10 @@
   dependencies:
     tslib "^1.9.0"
 
+"@materia/addons@1.0.0-beta.2":
+  version "1.0.0-beta.2"
+  resolved "https://registry.yarnpkg.com/@materia/addons/-/addons-1.0.0-beta.2.tgz#c1de5bf314e75915ca0dcb5ef98dcad0087ec155"
+
 "@ngtools/json-schema@^1.1.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@ngtools/json-schema/-/json-schema-1.1.0.tgz#c3a0c544d62392acc2813a42c8a0dc6f58f86922"

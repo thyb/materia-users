@@ -4,7 +4,7 @@ Manage your user in your Materia application in few clicks
 
 ## Features
 
-* Simple session based authentication
+* Simple session or token based authentication
 * Email / password or username / password authentication
 * Custom data support
 * Secure
@@ -18,8 +18,10 @@ In your Materia application, run `yarn add @materia/users`
 Clone this repository:
 
 ```
-git clone https://github.com/thyb/materia-users.git
+git clone https://github.com/materiahq/materia-users.git
 cd materia-users
+git clone git@github.com:thyb/materia-addon-boilerplate.git
+cd materia-addon-boilerplate
 ```
 
 Then install dependencies and build:
@@ -29,7 +31,7 @@ yarn
 yarn build
 ```
 
-To test your addon locally before publishing it to NPM, use npm link:
+To test your addon locally before publishing it to NPM, use `npm link`:
 
 ```
 cd dist && npm link

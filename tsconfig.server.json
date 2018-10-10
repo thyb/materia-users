@@ -1,0 +1,17 @@
+{
+    "compileOnSave": true,
+    "compilerOptions": {
+        "rootDir": "./server/",
+        "outDir": "./dist/server",
+        "sourceMap": true,
+        "declaration": true,
+        "module": "commonjs",
+		"moduleResolution": "node",
+		"experimentalDecorators": true,
+        "target": "ES6"
+    },
+    "include": [
+        "server/index.ts",
+        "typings/index.d.ts"
+    ]
+}

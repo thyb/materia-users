@@ -1,0 +1,61 @@
+<form *ngIf="loginForm" [formGroup]="loginForm" style="max-width: 400px">
+	<h2 mat-dialog-title fxLayout="row">
+		<span fxFlex style="position: relative; top: 3px; left: 5px;">User Management - Setup</span>
+		<button (click)="close()" tabindex="-1" mat-icon-button>
+			<mat-icon>close</mat-icon>
+		</button>
+	</h2>
+	<mat-dialog-content>
+		<div fxLayout="column">
+			<h3>
+				Authentication method
+			</h3>
+			<mat-radio-group formControlName="method" fxLayout="column">
+				<mat-radio-button value="token">Token based authentication (mobile ready)</mat-radio-button>
+				<mat-radio-button value="session">Session based authentication</mat-radio-button>
+			</mat-radio-group>
+			<h3>
+				Enter a key to encrypt user's password
+			</h3>
+
+			<mat-form-field flex>
+				<input matInput placeholder="Static salt" formControlName="static_salt">
+			</mat-form-field>
+
+			<h3>
+				<mat-checkbox formControlName="user_profile_enabled">User profile</mat-checkbox>
+			</h3>
+			<mat-form-field *ngIf="entities && entities.length > 0; else noEntities">
+				<mat-select placeholder="Select the user profile entity" formControlName="user_profile_entity">
+					<mat-option *ngFor="let e of entities" [value]="e.name">{{ e.name }}</mat-option>
+				</mat-select>
+			</mat-form-field>
+			<ng-template #noEntities>
+				<div class="warning">
+					No entity found. You need an entity to add custom fields to your users.
+				</div>
+			</ng-template>
+		
+			<h3>
+				<mat-checkbox formControlName="email_verification">Emails enabled</mat-checkbox>
+			</h3>
+
+			<mat-form-field *ngIf="emailAddons && emailAddons.length > 0; else noEmailAddon">
+				<mat-select placeholder="Select your emailing addon" formControlName="email_addon">
+					<mat-option *ngFor="let e of emailAddons" [value]="e.package">{{ e.name }}</mat-option>
+				</mat-select>
+			</mat-form-field>
+
+			<ng-template #noEmailAddon>
+				<div class="warning">You need
+					<strong>Sendgrid</strong> or
+					<strong>Mailjet</strong> addon installed
+					<br>to send email from your Materia Application such as a signup email</div>
+			</ng-template>
+		</div>
+	</mat-dialog-content>
+	<mat-dialog-actions>
+		<button mat-raised-button color="primary" (click)="finish()">Save</button>
+		<button mat-raised-button (click)="close()">Cancel</button>
+	</mat-dialog-actions>
+</form>

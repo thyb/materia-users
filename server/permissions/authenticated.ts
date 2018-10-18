@@ -3,7 +3,6 @@ export function defineAuthenticatedPermission(app, config) {
     name: 'Authenticated',
     description: 'Only signed in users are allowed',
     middleware: (req, res, next) => {
-      function check(req2) {}
       if (config.method === 'token') {
         return app.server.passport.authenticate('usersAccessToken', {
           session: false

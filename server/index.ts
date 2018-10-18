@@ -56,9 +56,7 @@ export default class UserManagementAddon {
     if (this.config.method === 'token') {
       addUserTokenQueries(this.app);
     }
-    if (this.config.social_account) {
-      addSocialAccountQueries(this.app);
-    }
+    addSocialAccountQueries(this.app);
     return Promise.resolve();
   }
 

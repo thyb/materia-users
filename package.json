@@ -2,15 +2,15 @@
   "name": "@materia/users",
   "version": "1.0.0-beta.2",
   "description": "",
-  "author": "thibaud.arnault@gmail.com",
+  "author": "team@getmateria.com",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/thyb/materia-users/issues"
+    "url": "https://github.com/materiahq/materia-users/issues"
   },
-  "homepage": "https://github.com/thyb/materia-users#readme",
+  "homepage": "https://github.com/materiahq/materia-users#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/thyb/materia-users.git"
+    "url": "git+https://github.com/materiahq/materia-users.git"
   },
   "scripts": {
     "build": "ng build",

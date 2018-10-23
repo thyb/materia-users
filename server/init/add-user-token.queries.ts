@@ -7,6 +7,20 @@ export function addUserTokenQueries(app) {
         params: [],
         action: 'clearExpiredTokens'
       }
+    },
+    {
+      id: 'getActiveTokens',
+      type: 'custom',
+      opts: {
+        params: [
+          {
+            name: 'id_user',
+            type: 'text',
+            required: true
+          }
+        ],
+        action: 'getActiveTokens'
+      }
     }
   ]);
 }

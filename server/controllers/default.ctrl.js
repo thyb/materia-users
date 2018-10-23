@@ -128,7 +128,7 @@ class DefaultCtrl {
 
   logout(req, res, next) {
     req.logOut();
-    res.status(200).json({logout: true})
+    res.status(200).json({ logout: true });
   }
 
   //Params: new_email
@@ -140,7 +140,7 @@ class DefaultCtrl {
     let key = this._generateKey();
 
     if (this.config.email_verification) {
-      return userEntity
+      userEntity
         .getQuery('update')
         .run({
           id_user: req.user.id_user,
@@ -155,14 +155,26 @@ class DefaultCtrl {
             })
             .then(() => {
               req.user.new_email = params.new_email;
-              return Promise.resolve({
+              res.status(200).json({
+                changed: true,
+                verificationEmail: true
+              });
+            })
+            .catch(e => {
+              res.status(200).json({
                 changed: true,
                 verificationEmail: true
               });
             });
+        })
+        .catch(e => {
+          res.status(400).json({
+            error: true,
+            message: e.message
+          });
         });
     } else {
-      return userEntity
+      userEntity
         .getQuery('update')
         .run({
           id_user: req.user.id_user,
@@ -171,6 +183,12 @@ class DefaultCtrl {
         .then(() => {
           req.user.email = params.new_email;
           return Promise.resolve({ changed: true, verificationEmail: false });
+        })
+        .catch(e => {
+          res.status(400).json({
+            error: true,
+            message: e.message
+          });
         });
     }
   }
@@ -180,7 +198,7 @@ class DefaultCtrl {
   changeUsername(req, res, next) {
     let params = Object.assign({}, req.query, req.body);
     let userEntity = this.app.entities.get('user');
-    return userEntity
+    userEntity
       .getQuery('update')
       .run({
         id_user: req.user.id_user,
@@ -188,55 +206,68 @@ class DefaultCtrl {
       })
       .then(() => {
         req.user.username = params.new_username;
-        return Promise.resolve({ changed: true });
+        res.status(200).json({ changed: true });
+      })
+      .catch(e => {
+        res.status(400).json({
+          error: true,
+          message: e.message
+        });
+      });
+  }
+
+  //Params: id_user & key
+  canResetPassword(req, res) {
+    let params = Object.assign({}, req.params, req.body, req.query);
+
+    this.app.entities
+      .get('user')
+      .getQuery('canResetPassword')
+      .run(params)
+      .then(user => {
+        delete user.password;
+        delete user.salt;
+        delete user.key_email;
+        delete user.id_stripe;
+        res.status(200).send(user);
+      })
+      .catch(e => {
+        res.status(400).send({
+          message: e.message
+        });
       });
   }
 
   //Params: id_user & key & new_password
   changeLostPassword(req, res, next) {
-    let params = Object.assign({}, req.params, req.body, req.query);
-    let userEntity = this.app.entities.get('user');
-
-    if (
-      params.key &&
-      params.id_user &&
-      params.new_password &&
-      this.config.email_verification
-    ) {
-      userEntity
-        .getQuery('get')
-        .run(
-          {
-            id_user: params.id_user
-          },
-          { raw: true }
-        )
-        .then(user => {
-          if (user.key_password == params.key) {
-            let newPasswordEncrypted = md5(
+	let params = Object.assign({}, req.params, req.body, req.query);
+	const userEntity = this.app.entities.get('user');
+    userEntity
+      .getQuery('canResetPassword')
+      .run(params)
+      .then(user =>
+        userEntity
+          .getQuery('update')
+          .run({
+            password: md5(
               this.config.static_salt + params.new_password + user.salt
-            );
-            return userEntity
-              .getQuery('update')
-              .run({
-                password: newPasswordEncrypted,
-                key_password: null,
-                id_user: params.id_user
-              })
-              .then(() => user);
-          } else return Promise.reject('key does not match');
-        })
-        .then(user => {
-          req.body.email = user.email;
-          req.body.password = params.new_password;
-          return this.signin(req, res, next);
+            ),
+            key_password: null,
+            id_user: params.id_user
+          })
+          .then(() => user)
+      )
+      .then(user => {
+        req.body.email = user.email;
+        req.body.password = params.new_password;
+        this.signin(req, res, next);
+      })
+      .catch(e => {
+        res.status(400).json({
+          error: true,
+          message: e.message
         });
-    } else {
-      res.status(500).send({
-        error: true,
-        message: 'Missing required parameter'
       });
-    }
   }
 
   //old_password & new_password
@@ -253,7 +284,7 @@ class DefaultCtrl {
       }
       let staticSalt = this.config.static_salt;
 
-      return userEntity
+      userEntity
         .getQuery('get')
         .run(
           {
@@ -277,21 +308,24 @@ class DefaultCtrl {
                 password: encryptedNewPassword,
                 key_password: null
               })
-              .then(() => user);
+              .then(() => {
+                res.status(200).json(user);
+              });
           } else {
-            return res.status(500).send({
+            res.status(500).send({
               error: true,
               message: 'old password does not match'
             });
+            return Promise.reject();
           }
         })
         .then(user => {
           req.body.email = user.email;
           req.body.password = params.new_password;
-          return this.signin(req, res, next);
+          this.signin(req, res, next);
         });
     } else {
-      return res.status(500).send({
+      res.status(500).send({
         error: true,
         message: 'Missing required parameter'
       });
@@ -300,24 +334,40 @@ class DefaultCtrl {
 
   verifyEmail(req, res, next) {
     let params = Object.assign({}, req.query, req.body, req.params);
-    return this.app.entities
+    this.app.entities
       .get('user')
       .getQuery('verifyEmail')
       .run(params)
       .then(redirect => {
+        console.log('redirect to ' + redirect);
         res.redirect(redirect);
-        return Promise.resolve();
-      }).catch(err => {
-        return Promise.reject(err);
+        // res.status(200).send();
+      })
+      .catch(err => {
+        res.status(400).json({
+          error: true,
+          message: err.message
+        });
       });
   }
 
   sendVerificationEmail(req, res) {
-    let params = Object.assign({}, req.query, req.body, req.params);
-    return this.app.entities
+    // let params = Object.assign({}, req.query, req.body, req.params);
+    this.app.entities
       .get('user')
       .getQuery('sendVerificationEmail')
-      .run(params)
+      .run({
+        id_user: req.user.id_user
+      })
+      .then(() => {
+        res.status(200).send();
+      })
+      .catch(e => {
+        res.status(400).json({
+          error: true,
+          message: e.message
+        });
+      });
   }
 }
 module.exports = DefaultCtrl;

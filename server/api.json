@@ -6,14 +6,7 @@
     "action": "sendVerificationEmail",
     "parent": "User management",
     "permissions": ["Authenticated"],
-    "params": [
-      {
-        "name": "id_user",
-        "type": "text",
-        "required": true,
-        "component": "input"
-      }
-    ]
+    "params": []
   },
   {
     "method": "post",
@@ -67,6 +60,25 @@
     "action": "changeEmail",
     "permissions": ["Authenticated"],
     "parent": "User management"
+  },
+  {
+    "method": "get",
+    "url": "/user/can_reset_password",
+    "controller": "default",
+    "action": "canResetPassword",
+    "parent": "User management",
+    "params": [
+      {
+        "name": "key",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "id_user",
+        "type": "number",
+        "required": true
+      }
+    ]
   },
   {
     "method": "put",

@@ -1,4 +1,5 @@
 const md5 = require('md5');
+const crypto = require('crypto');
 
 class UserModel {
   constructor(app, model) {
@@ -128,7 +129,10 @@ class UserModel {
         created.email = params.email;
         return this.sendVerificationEmail({ id_user: created.id_user })
           .then(() => created)
-          .catch(() => created);
+          .catch(e => {
+            console.log(e);
+            return created;
+          });
       });
   }
 
@@ -149,9 +153,12 @@ class UserModel {
         )
         .then(user => {
           return this.userInfo(params).then(userSecure => {
-            if (userSecure.verified && ! user.new_email) {
-              return Promise.reject(`Email '${userSecure.email}' has already been verified`);
+            if (userSecure.verified && !user.new_email) {
+              return Promise.reject(
+                `Email '${userSecure.email}' has already been verified`
+              );
             }
+
             let verify_url = `${this.app.server.getBaseUrl()}/user/verify/${
               user.id_user
             }/${user.key_email}`;
@@ -168,7 +175,7 @@ class UserModel {
                 to: user.new_email ? user.new_email : user.email,
                 templateId: templateId,
                 subject: subject,
-                variables: Object.assign({}, userSecure, {
+                variables: JSON.stringify({
                   url_email_verification: verify_url
                 })
               };
@@ -195,6 +202,7 @@ class UserModel {
                   ' is not correctly installed: Query not found.'
               );
             }
+            console.log('email: ' + JSON.stringify(params));
             return emailQuery.run(params).then(() => userSecure);
           });
         });
@@ -235,10 +243,31 @@ class UserModel {
             .getQuery('update')
             .run(updates)
             .then(() => {
-              if (isSignup) {
-                return this.config.redirect_signup;
+              if (this.config.method == 'token') {
+                return this._generateToken().then(token => {
+                  const tokenHash = crypto
+                    .createHash('sha1')
+                    .update(token)
+                    .digest('hex');
+              
+                  var expires = new Date();
+                  expires.setDate(expires.getDate() + 1);
+
+                  return this.app.entities.get('user_token').getQuery('create').run({
+                    id_user: params.id_user,
+                    expires_in: expires,
+                    scope: '["*"]',
+                    token: tokenHash
+                  }).then(() => token);
+                });
               } else {
-                return this.config.redirect_change_email;
+                return Promise.resolve();
+              }
+            }).then(token => {
+              if (isSignup) {
+                return this.config.redirect_signup + (token ? '?access_token=' + token : '');
+              } else {
+                return this.config.redirect_change_email + (token ? '?access_token=' + token : '');
               }
             });
         } else {
@@ -267,6 +296,22 @@ class UserModel {
     return newUrl;
   }
 
+  _generateToken({
+    stringBase = 'base64',
+    byteLength = 32
+  } = {}) {
+    return new Promise((resolve, reject) => {
+      crypto.randomBytes(byteLength, (err, buffer) => {
+        if (err) {
+          reject(err);
+        } else {
+          console.log(buffer.toString(stringBase), buffer.toString(stringBase).replace(/[ =]/g, ''))
+          resolve(buffer.toString(stringBase).replace(/[ =+/\\]/g, ''));
+        }
+      });
+    });
+  }
+
   _execLostPassword(user) {
     let key = this._generateKey();
 
@@ -280,7 +325,8 @@ class UserModel {
       .then(() => {
         return this.userInfo(user).then(userSecure => {
           let redirect_url = this._buildRedirectUri(
-            this.config.redirect_lost_password, {
+            this.config.redirect_lost_password,
+            {
               id_user: user.id_user,
               key: key
             }
@@ -299,9 +345,9 @@ class UserModel {
               to: user.email,
               templateId: this.config.template_lost_password,
               subject: this.config.subject_lost_password,
-              variables: Object.assign({}, userSecure, {
+              variables: {
                 url_lost_password: redirect_url
-              })
+              }
             };
           }
           //send the email
@@ -313,12 +359,31 @@ class UserModel {
       });
   }
 
+  canResetPassword(params) {
+    let userEntity = this.app.entities.get('user');
+    return userEntity
+      .getQuery('get')
+      .run(
+        {
+          id_user: params.id_user
+        },
+        { raw: true }
+      )
+      .then(user => {
+        if (user.key_password == params.key) {
+          return Promise.resolve(user);
+        } else {
+          return Promise.reject('key does not match');
+        }
+      });
+  }
+
   /**
    *
    * @param {*} params
    */
   lostPassword(params) {
-    if ( ! this.config.email_verification ) {
+    if (!this.config.email_verification) {
       return Promise.reject(
         'Email verification not configured - Lost password functionality disabled'
       );
@@ -326,10 +391,11 @@ class UserModel {
     return this.app.entities
       .get('user')
       .getQuery('getByEmail')
-      .run({
-        email: params.email
-      }, 
-      { raw: true }
+      .run(
+        {
+          email: params.email
+        },
+        { raw: true }
       )
       .then(user => {
         if (user) {
@@ -340,7 +406,8 @@ class UserModel {
       })
       .then(() => {
         return { emailSent: true };
-      }).catch((err) => Promise.reject(err.message))
+      })
+      .catch(err => Promise.reject(err.message));
   }
 }
 module.exports = UserModel;

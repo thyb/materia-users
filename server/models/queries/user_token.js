@@ -17,6 +17,18 @@ class UserTokenModel {
 			}
 		})
 	}
+
+	getActiveTokens(params) {
+		return this.model.findAll({
+			where: {
+				expires_in: {
+					[Sequelize.Op.gt]: new Date()
+				},
+				id_user: params.id_user
+			},
+			order: [['expires_in', 'DESC']]
+		})
+	}
 }
 
 module.exports = UserTokenModel;

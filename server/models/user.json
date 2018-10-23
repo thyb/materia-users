@@ -133,6 +133,25 @@
       }
     },
     {
+      "id": "canResetPassword",
+      "type": "custom",
+      "opts": {
+        "params": [
+          {
+            "name": "id_user",
+            "type": "number",
+            "required": true
+          },
+          {
+            "name": "key",
+            "type": "text",
+            "required": true
+          }
+        ],
+        "action": "canResetPassword"
+      }
+    },
+    {
       "id": "lostPassword",
       "type": "custom",
       "opts": {

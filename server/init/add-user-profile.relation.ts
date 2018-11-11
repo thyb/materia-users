@@ -29,10 +29,7 @@ export function addUserProfileRelation(app, config) {
             }
           },
           opts
-        )
-        .catch(e => {
-          console.log('ERROR!', e);
-        });
+        );
     } else {
       return Promise.resolve();
     }

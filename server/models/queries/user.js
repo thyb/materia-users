@@ -130,7 +130,6 @@ class UserModel {
         return this.sendVerificationEmail({ id_user: created.id_user })
           .then(() => created)
           .catch(e => {
-            console.log(e);
             return created;
           });
       });
@@ -202,7 +201,6 @@ class UserModel {
                   ' is not correctly installed: Query not found.'
               );
             }
-            console.log('email: ' + JSON.stringify(params));
             return emailQuery.run(params).then(() => userSecure);
           });
         });
@@ -305,7 +303,6 @@ class UserModel {
         if (err) {
           reject(err);
         } else {
-          console.log(buffer.toString(stringBase), buffer.toString(stringBase).replace(/[ =]/g, ''))
           resolve(buffer.toString(stringBase).replace(/[ =+/\\]/g, ''));
         }
       });

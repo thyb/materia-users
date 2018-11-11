@@ -41,8 +41,5 @@ export function defineIsUserRolePermissions(app) {
 }
         });
       });
-    })
-    .catch(e => {
-      console.log(e);
     });
 }

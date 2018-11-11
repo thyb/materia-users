@@ -339,7 +339,6 @@ class DefaultCtrl {
       .getQuery('verifyEmail')
       .run(params)
       .then(redirect => {
-        console.log('redirect to ' + redirect);
         res.redirect(redirect);
         // res.status(200).send();
       })

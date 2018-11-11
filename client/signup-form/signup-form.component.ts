@@ -33,7 +33,6 @@ export class SignupFormComponent implements OnInit, OnChanges {
     }
   }
   private initForm() {
-    console.log('form', this.getProfileFormGroup());
     this.signupForm = this.fb.group(Object.assign({}, {
       email: ['', Validators.required],
       password: ['', Validators.required]

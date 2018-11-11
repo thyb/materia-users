@@ -45,9 +45,7 @@ export class TokenAuth extends Auth {
   }
 
   verifyToken(accessToken, done) {
-    console.log('check accessToken', accessToken);
-    if (!accessToken) {
-      console.log('no access token');
+    if ( ! accessToken ) {
       return done(null, false);
     }
     const accessTokenHash = crypto
@@ -65,8 +63,7 @@ export class TokenAuth extends Auth {
         { raw: true }
       )
       .then(token => {
-        if (!token) {
-          console.log('no token #1 found for ' + accessTokenHash);
+        if ( ! token) {
           return done(null, false);
         } else if (new Date() > token.expires_in) {
           this.clearExpiredTokens();
@@ -77,7 +74,6 @@ export class TokenAuth extends Auth {
         }
       })
       .catch(err => {
-        console.log('no token found #2 for ' + accessTokenHash);
         return done(null, false);
       });
   }

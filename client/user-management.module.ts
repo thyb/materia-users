@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FlexLayoutModule } from '@angular/flex-layout';
-import { NgxChartsModule } from '@swimlane/ngx-charts';
 
 import {
   MatButtonModule,
@@ -57,7 +56,6 @@ import { EmailSettingsComponent } from './emails-settings/email-settings.compone
     MatExpansionModule,
     MatListModule,
     MatRadioModule,
-    NgxChartsModule,
     MatStepperModule
   ],
   declarations: [

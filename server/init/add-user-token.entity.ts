@@ -46,7 +46,7 @@ export function addUserTokenEntity(app) {
       apply: true,
       history: true,
       save: false,
-      db: true
+      db: false
     }
   );
 }

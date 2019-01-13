@@ -61,7 +61,7 @@ export function addSocialAccountEntity(app) {
       apply: true,
       history: true,
       save: false,
-      db: true
+      db: false
     }
   );
 }

@@ -11,7 +11,7 @@ Manage your user in your Materia application in few clicks
 
 ## Installation
 
-In your Materia application, run `yarn add @materia/users`
+In your Materia application, run `npm instal @materia/users --save` or `yarn add @materia/users`.
 
 ## Installation from local files
 

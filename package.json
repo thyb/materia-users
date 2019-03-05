@@ -85,6 +85,7 @@
     }
   },
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "express-session": "^1.15.6",
     "flash": "^1.1.0",
     "md5": "^2.2.1",
@@ -93,6 +94,7 @@
     "passport-http-bearer": "^1.0.1",
     "passport-local": "^1.0.0",
     "passport-oauth2-client-password": "^0.1.2",
-    "sequelize": "^4.38.0"
+    "sequelize": "^4.38.0",
+    "uuid": "^3.3.2"
   }
 }

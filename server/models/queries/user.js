@@ -1,5 +1,5 @@
-const md5 = require('md5');
-const crypto = require('crypto');
+const uuid = require('uuid/v4');
+const bcrypt = require('bcryptjs');
 
 class UserModel {
   constructor(app, model) {
@@ -30,7 +30,6 @@ class UserModel {
         if (user.new_email !== undefined && user.new_email === null) {
           delete user.new_email;
         }
-        delete user.salt;
         if (
           this.config &&
           this.config.user_profile_enabled &&
@@ -70,7 +69,6 @@ class UserModel {
       .forEach(field => {
         if (
           field.name != 'password' &&
-          field.name != 'salt' &&
           field.name != 'key' &&
           field.name != 'verified'
         ) {
@@ -81,58 +79,52 @@ class UserModel {
     return message;
   }
 
-  _generateKey() {
-    return md5(Math.random()).substr(0, 8);
-  }
-
   signup(params) {
     let user = this.app.entities.get('user');
 
     let password = params.password;
-    let salt = this._generateKey();
-    let staticSalt = this.config.static_salt;
-    let encryptedPassword = md5(staticSalt + password + salt);
 
-    params.password = encryptedPassword;
-    params.salt = salt;
-    params.key_email = this._generateKey();
-
-    const paramsProfile = {};
-
-    Object.keys(params).forEach(paramName => {
-      if (['email', 'password', 'salt', 'key_email'].indexOf(paramName) == -1) {
-        paramsProfile[paramName] = params[paramName];
-        delete params[paramName];
-      }
-    });
-    return user
-      .getQuery('create')
-      .run(params, { raw: true })
-      .then(created => {
-        let p = Promise.resolve(created);
-        if (
-          this.config &&
-          this.config.user_profile_enabled &&
-          this.config.user_profile_entity
-        ) {
-          const profileEntity = this.app.entities.get(
-            this.config.user_profile_entity
-          );
-          paramsProfile.id_user = created.id_user;
-          p = profileEntity
-            .getQuery('create')
-            .run(paramsProfile, { raw: true });
+    return bcrypt.hash(password, 10).then(encryptedPassword => {
+      params.password = encryptedPassword;
+      params.key_email = uuid();
+  
+      const paramsProfile = {};
+  
+      Object.keys(params).forEach(paramName => {
+        if (['email', 'password', 'key_email'].indexOf(paramName) == -1) {
+          paramsProfile[paramName] = params[paramName];
+          delete params[paramName];
         }
-        return p;
-      })
-      .then(created => {
-        created.email = params.email;
-        return this.sendVerificationEmail({ id_user: created.id_user })
-          .then(() => created)
-          .catch(e => {
-            return created;
-          });
       });
+      return user
+        .getQuery('create')
+        .run(params, { raw: true })
+        .then(created => {
+          let p = Promise.resolve(created);
+          if (
+            this.config &&
+            this.config.user_profile_enabled &&
+            this.config.user_profile_entity
+          ) {
+            const profileEntity = this.app.entities.get(
+              this.config.user_profile_entity
+            );
+            paramsProfile.id_user = created.id_user;
+            p = profileEntity
+              .getQuery('create')
+              .run(paramsProfile, { raw: true });
+          }
+          return p;
+        })
+        .then(created => {
+          created.email = params.email;
+          return this.sendVerificationEmail({ id_user: created.id_user })
+            .then(() => created)
+            .catch(e => {
+              return created;
+            });
+        });  
+    })
   }
 
   sendVerificationEmail(params) {
@@ -242,22 +234,21 @@ class UserModel {
             .run(updates)
             .then(() => {
               if (this.config.method == 'token') {
-                return this._generateToken().then(token => {
-                  const tokenHash = crypto
-                    .createHash('sha1')
-                    .update(token)
-                    .digest('hex');
-              
-                  var expires = new Date();
-                  expires.setDate(expires.getDate() + 1);
+                const token = uuid();
+                const tokenHash = crypto
+                  .createHash('sha1')
+                  .update(token)
+                  .digest('hex');
+            
+                var expires = new Date();
+                expires.setDate(expires.getDate() + 1);
 
-                  return this.app.entities.get('user_token').getQuery('create').run({
-                    id_user: params.id_user,
-                    expires_in: expires,
-                    scope: '["*"]',
-                    token: tokenHash
-                  }).then(() => token);
-                });
+                return this.app.entities.get('user_token').getQuery('create').run({
+                  id_user: params.id_user,
+                  expires_in: expires,
+                  scope: '["*"]',
+                  token: tokenHash
+                }).then(() => token);
               } else {
                 return Promise.resolve();
               }
@@ -294,23 +285,8 @@ class UserModel {
     return newUrl;
   }
 
-  _generateToken({
-    stringBase = 'base64',
-    byteLength = 32
-  } = {}) {
-    return new Promise((resolve, reject) => {
-      crypto.randomBytes(byteLength, (err, buffer) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(buffer.toString(stringBase).replace(/[ =+/\\]/g, ''));
-        }
-      });
-    });
-  }
-
   _execLostPassword(user) {
-    let key = this._generateKey();
+    let key = uuid();
 
     return this.app.entities
       .get('user')
@@ -321,14 +297,14 @@ class UserModel {
       })
       .then(() => {
         return this.userInfo(user).then(userSecure => {
-          let redirect_url = this._buildRedirectUri(
+          const redirect_url = this._buildRedirectUri(
             this.config.redirect_lost_password,
             {
               id_user: user.id_user,
               key: key
             }
           );
-          let subject = this._translate(
+          const subject = this._translate(
             this.config.subject_lost_password,
             user,
             redirect_url
@@ -341,7 +317,7 @@ class UserModel {
             params = {
               to: user.email,
               templateId: this.config.template_lost_password,
-              subject: this.config.subject_lost_password,
+              subject: subject,
               variables: {
                 url_lost_password: redirect_url
               }

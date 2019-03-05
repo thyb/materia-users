@@ -1,5 +1,6 @@
 import * as crypto from 'crypto';
 import * as oauth2orize from 'oauth2orize';
+import * as uuid from 'uuid/v4';
 
 import { Strategy as ClientPasswordStrategy } from 'passport-oauth2-client-password';
 import { Strategy as BearerStrategy } from 'passport-http-bearer';
@@ -11,27 +12,26 @@ export class TokenAuth extends Auth {
     this.app.usersOAuthServer = oauth2orize.createServer();
     this.app.usersOAuthServer.exchange(
       oauth2orize.exchange.clientCredentials((client, res, done) => {
-        return this.generateToken().then(token => {
-          const tokenHash = crypto
-            .createHash('sha1')
-            .update(token)
-            .digest('hex');
-          this.app.entities
-            .get('user_token')
-            .getQuery('create')
-            .run({
-              token: tokenHash,
-              expires_in: new Date(new Date().getTime() + 3600 * 48 * 1000),
-              id_user: client.id_user,
-              scope: '["*"]'
-            });
-          return done(
-            null /* No error*/,
-            token /* The generated token*/,
-            null /* The generated refresh token, none in this case */,
-            client /* Additional properties to be merged with the token and send in the response */
-          );
-        });
+        const token = uuid();
+        const tokenHash = crypto
+          .createHash('sha1')
+          .update(token)
+          .digest('hex');
+        this.app.entities
+          .get('user_token')
+          .getQuery('create')
+          .run({
+            token: tokenHash,
+            expires_in: new Date(new Date().getTime() + 3600 * 48 * 1000),
+            id_user: client.id_user,
+            scope: '["*"]'
+          });
+        return done(
+          null /* No error*/,
+          token /* The generated token*/,
+          null /* The generated refresh token, none in this case */,
+          client /* Additional properties to be merged with the token and send in the response */
+        );
       })
     );
     this.passport.use(

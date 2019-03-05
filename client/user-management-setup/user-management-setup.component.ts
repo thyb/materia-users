@@ -54,10 +54,6 @@ export class UserManagementSetupComponent implements OnInit {
             this.getSettingsProperty('method', 'session'),
             Validators.required
           ],
-          static_salt: [
-            this.getSettingsProperty('static_salt', ''),
-            Validators.required
-          ],
           user_profile_enabled: [
             this.getSettingsProperty('user_profile_enabled', 'false')
           ],

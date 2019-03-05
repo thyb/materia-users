@@ -1,14 +1,11 @@
-const md5 = require('md5');
+const bcrypt = require('bcryptjs');
+const uuid = require('uuid/v4');
 
 class DefaultCtrl {
   constructor(app) {
     this.app = app;
     this.passport = this.app.server.passport;
     this.config = this.app.addons.addonsConfig['@materia/users'];
-  }
-
-  _generateKey() {
-    return md5(Math.random()).substr(0, 8);
   }
 
   me(req, res, next) {
@@ -81,7 +78,7 @@ class DefaultCtrl {
         }
       )(req, res, next);
     } else {
-      this.passport.authenticate('local', { session: false }, function(
+      this.passport.authenticate('local', { session: false }, function (
         err,
         user
       ) {
@@ -97,7 +94,7 @@ class DefaultCtrl {
             message: 'bad credentials'
           });
         }
-        req.logIn(user, function(err) {
+        req.logIn(user, function (err) {
           if (err) {
             res.status(401).json({
               error: true,
@@ -137,7 +134,7 @@ class DefaultCtrl {
     let params = Object.assign({}, req.query, req.body);
     let userEntity = this.app.entities.get('user');
 
-    let key = this._generateKey();
+    let key = uuid();
 
     if (this.config.email_verification) {
       userEntity
@@ -240,34 +237,35 @@ class DefaultCtrl {
 
   //Params: id_user & key & new_password
   changeLostPassword(req, res, next) {
-	let params = Object.assign({}, req.params, req.body, req.query);
-	const userEntity = this.app.entities.get('user');
-    userEntity
-      .getQuery('canResetPassword')
-      .run(params)
-      .then(user =>
-        userEntity
-          .getQuery('update')
-          .run({
-            password: md5(
-              this.config.static_salt + params.new_password + user.salt
-            ),
-            key_password: null,
-            id_user: params.id_user
-          })
-          .then(() => user)
-      )
-      .then(user => {
-        req.body.email = user.email;
-        req.body.password = params.new_password;
-        this.signin(req, res, next);
-      })
-      .catch(e => {
-        res.status(400).json({
-          error: true,
-          message: e.message
+    let params = Object.assign({}, req.params, req.body, req.query);
+    const userEntity = this.app.entities.get('user');
+    
+    bcrypt.hash(params.new_password, 10).then(hash => {
+      userEntity
+        .getQuery('canResetPassword')
+        .run(params)
+        .then(user =>
+          userEntity
+            .getQuery('update')
+            .run({
+              password: hash,
+              key_password: null,
+              id_user: params.id_user
+            })
+            .then(() => user)
+        )
+        .then(user => {
+          req.body.email = user.email;
+          req.body.password = params.new_password;
+          this.signin(req, res, next);
+        })
+        .catch(e => {
+          res.status(400).json({
+            error: true,
+            message: e.message
+          });
         });
-      });
+    });
   }
 
   //old_password & new_password
@@ -275,61 +273,58 @@ class DefaultCtrl {
     let params = Object.assign({}, req.params, req.body, req.query);
     let userEntity = this.app.entities.get('user');
 
-    if (params.old_password && params.new_password) {
-      if (!req.user || !req.user.id_user) {
-        return res.status(401).send({
-          error: true,
-          message: 'Unauthorized call.'
-        });
-      }
-      let staticSalt = this.config.static_salt;
-
-      userEntity
-        .getQuery('get')
-        .run(
-          {
-            id_user: req.user.id_user
-          },
-          { raw: true }
-        )
-        .then(user => {
-          let encryptedOldPassword = md5(
-            staticSalt + params.old_password + user.salt
-          );
-          let encryptedNewPassword = md5(
-            staticSalt + params.new_password + user.salt
-          );
-
-          if (user.password == encryptedOldPassword) {
-            return userEntity
-              .getQuery('update')
-              .run({
-                id_user: req.user.id_user,
-                password: encryptedNewPassword,
-                key_password: null
-              })
-              .then(() => {
-                res.status(200).json(user);
-              });
-          } else {
-            res.status(500).send({
-              error: true,
-              message: 'old password does not match'
-            });
-            return Promise.reject();
-          }
-        })
-        .then(user => {
-          req.body.email = user.email;
-          req.body.password = params.new_password;
-          this.signin(req, res, next);
-        });
-    } else {
-      res.status(500).send({
+    if (!params.old_password || !params.new_password) {
+      return res.status(500).send({
         error: true,
         message: 'Missing required parameter'
       });
     }
+    if (!req.user || !req.user.id_user) {
+      return res.status(401).send({
+        error: true,
+        message: 'Unauthorized call.'
+      });
+    }
+
+    userEntity
+      .getQuery('get')
+      .run(
+        {
+          id_user: req.user.id_user
+        },
+        { raw: true }
+      )
+      .then(user => {
+        return new Promise((resolve, reject) => {
+          bcrypt.compare(params.old_password, user.password).then(res => {
+            if (res) {
+              bcrypt.hash(params.new_password, 10).then(newHash => {
+                userEntity.getQuery('update')
+                  .run({
+                    id_user: req.user.id_user,
+                    password: newHash,
+                    key_password: null
+                  })
+                  .then(() => {
+                    res.status(200).json(user);
+                    resolve(user);
+                  });
+              })
+            } else {
+              res.status(500).send({
+                error: true,
+                message: 'old password does not match'
+              });
+              reject();
+            }
+          })
+        })
+      })
+      .then(user => {
+        req.body.email = user.email;
+        req.body.password = params.new_password;
+        this.signin(req, res, next);
+      });
   }
 
   verifyEmail(req, res, next) {

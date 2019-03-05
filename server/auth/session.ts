@@ -25,7 +25,6 @@ export class SessionAuth extends Auth {
         .run({ id_user: id_user }, { raw: true })
         .then(user => {
           delete user.password;
-          delete user.salt;
           delete user.key_password;
           delete user.key_email;
           done(null, user);

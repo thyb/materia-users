@@ -6,14 +6,16 @@
   },
   "whitelistedNonPeerDependencies": [
     "tslib",
+    "uuid",
     "md5",
+    "bcrypt",
     "flash",
     "express-session",
     "passport",
     "passport-local",
-	"oauth2orize",
-	"passport-oauth2-client-password",
-	"passport-http-bearer",
-	"sequelize"
+    "oauth2orize",
+    "passport-oauth2-client-password",
+    "passport-http-bearer",
+    "sequelize"
   ]
 }

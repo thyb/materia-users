@@ -30,14 +30,6 @@
       "write": true
     },
     {
-      "name": "salt",
-      "type": "text",
-      "required": true,
-      "component": "input",
-      "read": true,
-      "write": true
-    },
-    {
       "name": "verified",
       "type": "boolean",
       "required": true,

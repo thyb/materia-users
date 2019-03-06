@@ -131,6 +131,7 @@ export class UserManagementViewComponent implements OnInit {
           duration: 3000
         });
         this.hideEmailSettings();
+        this.settings = settings;
       });
   }
 

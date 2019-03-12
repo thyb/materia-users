@@ -41,6 +41,7 @@ export class UserManagementViewComponent implements OnInit {
   @ViewChild(SignupFormComponent)
   signupDialogComp: SignupFormComponent;
 
+  loading = true;
   me: any;
   users: User[] = [];
   nbUsers = 0;
@@ -89,11 +90,13 @@ export class UserManagementViewComponent implements OnInit {
   }
 
   refreshList() {
+    this.loading = true;
     this.http
       .post<any>(`${this.baseUrl}/entities/user/queries/listWithGravatar`, {})
       .subscribe(res => {
         this.users = res.data;
         this.nbUsers = res.count;
+        this.loading = false;
       });
   }
 

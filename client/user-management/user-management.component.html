@@ -3,7 +3,7 @@
 		Currently connected as {{me.email}} (<a style="text-decoration: underline; cursor: pointer;" (click)="logout()">Logout</a>)
 	</div>
 	<div fxLayout="row" fxFlex>
-		<mat-card fxLayout="column" fxFlex>
+		<mat-card fxLayout="column" fxFlex *ngIf="!loading; else loadingUsers">
 			<mat-toolbar fxLayout="row" fxLayoutAlign="start center">
 				<mat-icon>people</mat-icon>
 				<span>
@@ -31,6 +31,11 @@
 				</div>
 			</ng-template>
 		</mat-card>
+		<ng-template #loadingUsers>
+			<mat-card fxLayout="column" fxFlex fxLayoutAlign="center center">
+				<mat-spinner></mat-spinner>
+			</mat-card>
+		</ng-template>
 		<div style="margin: 8px;" *ngIf="displayEmailSettings" fxLayout="column" fxFlex>
 			<mat-toolbar fxLayout="row" fxLayoutAlign="start center">
 				<button mat-icon-button (click)="hideEmailSettings()" matTooltip="Hide email settings" matTooltipPosition="right">

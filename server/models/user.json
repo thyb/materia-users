@@ -77,6 +77,25 @@
   ],
   "queries": [
     {
+      "id": "listWithGravatar",
+      "type": "custom",
+      "opts": {
+        "params": [
+          {
+            "name": "page",
+            "type": "number",
+            "required": false 
+          },
+          {
+            "name": "limit",
+            "type": "number",
+            "required": false 
+          }
+        ],
+        "action": "listWithGravatar"
+      }
+    },
+    {
       "id": "userInfo",
       "type": "custom",
       "opts": {

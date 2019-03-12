@@ -1,5 +1,6 @@
 const uuid = require('uuid/v4');
 const bcrypt = require('bcryptjs');
+const md5 = require('md5');
 
 class UserModel {
   constructor(app, model) {
@@ -7,6 +8,21 @@ class UserModel {
     this.model = model;
 
     this.config = this.app.addons.addonsConfig['@materia/users'];
+  }
+
+  listWithGravatar(params) {
+    return this.app.entities.get('user')
+      .getQuery('list').run({
+        page: params.page,
+        limit: params.limit
+      }, { raw: true }).then(result => {
+        result.data = result.data.map(user => {
+          return Object.assign({}, user, {
+            gravatar: 'http://www.gravatar.com/avatar/' + md5(user.email) + '?d=mm&s=32'
+          });
+        });
+        return result;
+      })
   }
 
   userInfo(params) {

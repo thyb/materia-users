@@ -17,8 +17,7 @@
 			</mat-toolbar>
 			<div *ngIf="users && users.length; else noUser" style="border-top: 1px solid #EEE; overflow-y: auto;" fxLayout="column" fxFlex>
 				<div fxLayout="row" fxLayoutAlign="start center" *ngFor="let user of users" style="border-bottom: 1px solid #EEE; cursor: pointer;min-height: 40px">
-					<img [src]="'http://www.gravatar.com/avatar/' + user.emailHash + '?d=mm&s=32'" class="avatar" style="margin: 0 8px; width:32px; height:32px;border-radius: 100%"
-					/>
+					<img [src]="user.gravatar" class="avatar" style="margin: 0 8px; width:32px; height:32px;border-radius: 100%" />
 					<div style="color: #999; padding-top: 0">{{user.email}}</div>
 				</div>
 			</div>

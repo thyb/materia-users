@@ -76,14 +76,6 @@
   "materia": {
     "addon": "UserManagementAddon"
   },
-  "externalPackages": {
-    "map": {
-      "md5": "md5.js",
-      "crypt": "crypt.js",
-      "charenc": "charenc.js",
-      "is-buffer": "index.js"
-    }
-  },
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "express-session": "^1.15.6",

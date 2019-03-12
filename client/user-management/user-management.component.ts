@@ -10,12 +10,11 @@ import { MatDialog, MatDialogRef, MatSnackBar } from '@angular/material';
 import { AddonView } from '@materia/addons';
 import { HttpClient } from '@angular/common/http';
 
-import md5 from 'md5';
 import { SignupFormComponent } from '../signup-form/signup-form.component';
 
 export interface User {
   email: string;
-  emailHash: string;
+  gravatar: string;
   name: string;
 }
 @AddonView('@materia/users')
@@ -91,13 +90,9 @@ export class UserManagementViewComponent implements OnInit {
 
   refreshList() {
     this.http
-      .post<any>(`${this.baseUrl}/entities/user/queries/list`, {})
+      .post<any>(`${this.baseUrl}/entities/user/queries/listWithGravatar`, {})
       .subscribe(res => {
-        this.users = res.data.map(user => {
-          return Object.assign({}, user, {
-            emailHash: md5(user.email || 'aaa')
-          });
-        });
+        this.users = res.data;
         this.nbUsers = res.count;
       });
   }

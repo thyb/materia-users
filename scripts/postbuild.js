@@ -19,7 +19,6 @@ fields.forEach(field => {
 })
 
 delete pkg.devDependencies;
-delete pkg.peerDependencies;
 
 fs.writeFileSync(path.join(__dirname, '..', 'dist', 'package.json'), JSON.stringify(pkg, null, 2), {
     encoding: 'utf-8'

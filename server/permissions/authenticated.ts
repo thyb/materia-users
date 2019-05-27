@@ -23,6 +23,7 @@ export function defineAuthenticatedPermission(app, config) {
       'me.email': 'user.email', // req.user.email etc.
       'me.name': 'user.name'
       // TODO: add other user fields here
-    }
+    },
+    fromAddon: app.addons.get('@materia/users').toJson()
   });
 }

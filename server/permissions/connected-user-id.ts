@@ -16,6 +16,7 @@ export function defineConnectedUserIdPermission(app, config) {
         throw e;
       }
     },
-    readOnly: true
+    readOnly: true,
+    fromAddon: app.addons.get('@materia/users').toJson()
   });
 }

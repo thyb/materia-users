@@ -1,6 +1,7 @@
 const uuid = require('uuid/v4');
 const bcrypt = require('bcryptjs');
 const md5 = require('md5');
+const crypto = require('crypto');
 
 class UserModel {
   constructor(app, model) {

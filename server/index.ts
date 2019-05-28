@@ -28,6 +28,10 @@ export default class UserManagementAddon {
   constructor(private app: any, private config: any, private express: any) {}
 
   afterLoadEntities() {
+    if (this.app.database.disabled) {
+      this.disabled = true;
+      return Promise.resolve();
+    }
     if (this.config) {
       const promises = [];
       if (this.config.method === 'token') {
@@ -42,7 +46,7 @@ export default class UserManagementAddon {
   }
 
   beforeLoadQueries() {
-    if (this.config.user_profile_enabled && this.config.user_profile_entity) {
+    if (! this.disabled && this.config.user_profile_enabled && this.config.user_profile_entity) {
       return addUserProfileRelation(this.app, this.config);
     }
     return Promise.resolve();
@@ -50,17 +54,21 @@ export default class UserManagementAddon {
 
   afterLoadQueries() {
     let promise = Promise.resolve();
-    if (this.config.user_profile_enabled && this.config.user_profile_entity) {
+    if (! this.disabled && this.config.user_profile_enabled && this.config.user_profile_entity) {
       promise = promise.then(() => addUserProfileQueries(this.app, this.config));
     }
-    if (this.config.method === 'token') {
+    if (! this.disabled && this.config.method === 'token') {
       promise = promise.then(() => addUserTokenQueries(this.app));
     }
-    return promise.then(() => addSocialAccountQueries(this.app));
+    if (! this.disabled) {
+      return promise.then(() => addSocialAccountQueries(this.app));
+    } else {
+      return promise;
+    }
   }
 
   afterLoadAPI() {
-    if (this.config.user_profile_enabled && this.config.user_profile_entity) {
+    if (! this.disabled && this.config.user_profile_enabled && this.config.user_profile_entity) {
       return addUserProfileApi(this.app, this.config);
     }
     return Promise.resolve();

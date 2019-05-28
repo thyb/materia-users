@@ -38,7 +38,8 @@ export function defineIsUserRolePermissions(app) {
     e.statusCode = 401;
     throw e;
   }
-}
+},
+          fromAddon: app.addons.get('@materia/users').toJson()
         });
       });
     });

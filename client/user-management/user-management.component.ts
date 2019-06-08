@@ -11,35 +11,30 @@ import { AddonView } from '@materia/addons';
 import { HttpClient } from '@angular/common/http';
 
 import { SignupFormComponent } from '../signup-form/signup-form.component';
+import { IApp } from '@materia/interfaces';
+import { UserManagementSettings } from '../models/user-setting.model';
 
 export interface User {
   email: string;
   gravatar: string;
   name: string;
 }
+
 @AddonView('@materia/users')
 @Component({
   selector: 'materia-user-management',
   templateUrl: './user-management.component.html',
-  styleUrls: ['./user-management.component.scss'],
-  providers: []
+  styleUrls: ['./user-management.component.scss']
 })
 export class UserManagementViewComponent implements OnInit {
-  @Input()
-  app;
-  @Input()
-  settings;
+  @Input() app: IApp;
+  @Input() settings: UserManagementSettings;
+  @Input() baseUrl: string;
+  @Input() apiUrl: string;
 
-  @Input()
-  baseUrl;
-  @Input()
-  apiUrl;
+  @Output() openSetup = new EventEmitter<void>();
 
-  @Output()
-  openSetup = new EventEmitter<void>();
-
-  @ViewChild(SignupFormComponent)
-  signupDialogComp: SignupFormComponent;
+  @ViewChild(SignupFormComponent) signupDialogComp: SignupFormComponent;
 
   loading = true;
   me: any;

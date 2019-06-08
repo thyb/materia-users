@@ -1,34 +1,27 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { FormGroup, Validators, FormBuilder } from '@angular/forms';
-
-import { AddonSetup } from '@materia/addons';
 import { HttpClient } from '@angular/common/http';
+import { AddonSetup } from '@materia/addons';
+import { IApp, IEntity } from '@materia/interfaces';
 
-export interface IUserManagementSetup {
-  method: string;
-  user_profile_enabled: boolean;
-  user_profile_entity: string;
-  email_verification: boolean;
-  email_addon: string;
-}
+import { UserManagementSettings } from '../models/user-setting.model';
 
 @AddonSetup('@materia/users')
 @Component({
   selector: 'materia-user-management-setup',
   templateUrl: './user-management-setup.component.html',
-  styleUrls: ['./user-management-setup.component.scss'],
-  providers: [FormBuilder]
+  styleUrls: ['./user-management-setup.component.scss']
 })
 export class UserManagementSetupComponent implements OnInit {
-  @Input() app;
-  @Input() settings: IUserManagementSetup;
+  @Input() app: IApp;
+  @Input() settings: UserManagementSettings;
   @Input() baseUrl: string;
   @Input() token: string;
-  @Output() save = new EventEmitter<IUserManagementSetup>();
+  @Output() save = new EventEmitter<UserManagementSettings>();
   @Output() cancel = new EventEmitter<void>();
 
   loginForm: FormGroup;
-  entities: any[];
+  entities: IEntity[];
   emailAddons = [];
 
   constructor(private fb: FormBuilder, private http: HttpClient) {}
@@ -58,7 +51,7 @@ export class UserManagementSetupComponent implements OnInit {
           ],
           email_addon: [this.getSettingsProperty('email_addon', false)],
         });
-        this.entities = res.entities.filter(entity => ! entity.fromAddon);
+        this.entities = res.entities.filter((entity: IEntity) => ! entity.fromAddon);
         this.emailAddons = res.addons.filter(
           addon =>
             addon.package === '@materia/sendgrid' ||

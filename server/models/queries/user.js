@@ -8,7 +8,7 @@ class UserModel {
     this.app = app;
     this.model = model;
 
-    this.config = this.app.addons.addonsConfig['@materia/users'];
+    this.config = this.app.addons.addonsConfig && this.app.addons.addonsConfig['@materia/users'];
   }
 
   listWithGravatar(params) {

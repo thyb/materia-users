@@ -3,7 +3,7 @@ class SocialAccountModel {
 		this.app = app;
 		this.model = entity.model;
 
-		this.config = this.app.addons.addonsConfig['@materia/users']
+		this.config = this.app.addons.addonsConfig && this.app.addons.addonsConfig['@materia/users'];
 	}
 
 	find(params) {

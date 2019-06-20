@@ -6,7 +6,7 @@ import {
   EventEmitter,
   ViewChild
 } from '@angular/core';
-import { MatDialog, MatDialogRef, MatSnackBar } from '@angular/material';
+import { MatDialog, MatDialogRef, MatSnackBar, PageEvent } from '@angular/material';
 import { AddonView } from '@materia/addons';
 import { HttpClient } from '@angular/common/http';
 
@@ -43,6 +43,7 @@ export class UserManagementViewComponent implements OnInit {
   signupDialog: MatDialogRef<any>;
   profileFields: any[];
   displayEmailSettings: boolean;
+  defaultPageIndex = 0;
 
   constructor(
     private dialog: MatDialog,
@@ -84,10 +85,10 @@ export class UserManagementViewComponent implements OnInit {
     }
   }
 
-  refreshList() {
+  refreshList(params?) {
     this.loading = true;
     this.http
-      .post<any>(`${this.baseUrl}/entities/user/queries/listWithGravatar`, {})
+      .post<any>(`${this.baseUrl}/entities/user/queries/listWithGravatar`, params)
       .subscribe(res => {
         this.users = res.data;
         this.nbUsers = res.count;
@@ -102,6 +103,11 @@ export class UserManagementViewComponent implements OnInit {
       },
       () => (this.me = null)
     );
+  }
+
+  paginationEvent(event: PageEvent) {
+    this.defaultPageIndex = event.pageIndex;
+    this.refreshList({limit: event.pageSize, page: event.pageIndex + 1});
   }
 
   configureEmails() {

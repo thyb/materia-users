@@ -21,7 +21,9 @@ import {
   MatStepperModule,
   MatSelectModule,
   MatCheckboxModule,
-  MatProgressSpinnerModule
+  MatProgressSpinnerModule,
+  MatBadgeModule,
+  MatPaginatorModule
 } from '@angular/material';
 
 import { Addon } from '@materia/addons';
@@ -58,7 +60,9 @@ import { EmailSettingsComponent } from './emails-settings/email-settings.compone
     MatListModule,
     MatRadioModule,
     MatStepperModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatBadgeModule,
+    MatPaginatorModule
   ],
   declarations: [
     UserManagementViewComponent,

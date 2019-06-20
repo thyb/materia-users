@@ -13,3 +13,6 @@ mat-icon {
 .no-users {
 	font-style: italic;
 }
+::ng-deep.mat-paginator-container {
+	background: #F5F5F5;
+}

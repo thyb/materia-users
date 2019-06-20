@@ -4,49 +4,61 @@
 	</div>
 	<div fxLayout="row" fxFlex>
 		<mat-card fxLayout="column" fxFlex>
-			<mat-toolbar fxLayout="row" fxLayoutAlign="start center">
-				<mat-icon>people</mat-icon>
-				<span [matBadge]="nbUsers" matBadgeOverlap="false">
-					Users
-				</span>
-				<span fxFlex></span>
-				<button *ngIf="!displayEmailSettings && settings.email_verification && settings.email_addon" style="margin-right: 8px;" (click)="configureEmails()" mat-button>Configure emails</button>
-				<button mat-mini-fab (click)="openSignupDialog()" matTooltip="New User" matTooltipPosition="left" style="width: 31px; height: 31px;">
-					<mat-icon style="position: relative; top: -6px; left: -4px;">add</mat-icon>
-				</button>
-			</mat-toolbar>
-			<ng-container *ngIf="!loading; else loadingUsers">
-				<div *ngIf="users && users.length; else noUser" style="border-top: 1px solid #EEE; overflow-y: auto;" fxLayout="column" fxFlex>
-					<div fxFlex fxLayout="column" [style.overflowY]="'auto'">
-						<div fxLayout="row" fxLayoutAlign="start center" *ngFor="let user of users" style="border-bottom: 1px solid #EEE; cursor: pointer;min-height: 40px">
-							<img [src]="user.gravatar" class="avatar" style="margin: 0 8px; width:32px; height:32px;border-radius: 100%" />
-							<div style="color: #999; padding-top: 0">{{user.email}}</div>
+			<ng-container *ngIf="settings?.method; else noSettings">
+				<mat-toolbar fxLayout="row" fxLayoutAlign="start center">
+					<mat-icon>people</mat-icon>
+					<span [matBadge]="nbUsers" matBadgeOverlap="false">
+						Users
+					</span>
+					<span fxFlex></span>
+					<button *ngIf="!displayEmailSettings && settings.email_verification && settings.email_addon" style="margin-right: 8px;" (click)="configureEmails()" mat-button>Configure emails</button>
+					<button mat-mini-fab (click)="openSignupDialog()" matTooltip="New User" matTooltipPosition="left" style="width: 31px; height: 31px;">
+						<mat-icon style="position: relative; top: -6px; left: -4px;">add</mat-icon>
+					</button>
+				</mat-toolbar>
+				<ng-container *ngIf="!loading; else loadingUsers">
+					<div *ngIf="users && users.length; else noUser" style="border-top: 1px solid #EEE; overflow-y: auto;" fxLayout="column" fxFlex>
+						<div fxFlex fxLayout="column" [style.overflowY]="'auto'">
+							<div fxLayout="row" fxLayoutAlign="start center" *ngFor="let user of users" style="border-bottom: 1px solid #EEE; cursor: pointer;min-height: 40px">
+								<img [src]="user.gravatar" class="avatar" style="margin: 0 8px; width:32px; height:32px;border-radius: 100%" />
+								<div style="color: #999; padding-top: 0">{{user.email}}</div>
+							</div>
 						</div>
+						<mat-paginator
+							hidePageSize="true"
+							showFirstLastButtons="true"
+							[length]="nbUsers"
+							[pageIndex]="defaultPageIndex"
+							(page)="paginationEvent($event)">
+						</mat-paginator>
 					</div>
-					<mat-paginator
-						hidePageSize="true"
-						showFirstLastButtons="true"
-						[length]="nbUsers"
-						[pageIndex]="defaultPageIndex"
-						(page)="paginationEvent($event)">
-					</mat-paginator>
-				</div>
-				<ng-template #noUser>
-					<div fxFlex fxLayout="column" fxLayoutAlign="center center" class="no-users">
-						<span>There is no users registered yet</span>
-						<div>
-							<button (click)="openSignupDialog()" mat-raised-button color="primary" [style.margin]="'15px'" [style.color]="'white'">
-								Create a user
-							</button>
+					<ng-template #noUser>
+						<div fxFlex fxLayout="column" fxLayoutAlign="center center" class="no-users">
+							<span>There is no users registered yet</span>
+							<div>
+								<button (click)="openSignupDialog()" mat-raised-button color="primary" [style.margin]="'15px'" [style.color]="'white'">
+									Create a user
+								</button>
+							</div>
 						</div>
-					</div>
-				</ng-template>
+					</ng-template>
+				</ng-container>
 			</ng-container>
 		</mat-card>
 		<ng-template #loadingUsers>
-			<mat-card fxLayout="column" fxFlex fxLayoutAlign="center center">
+			<div fxLayout="column" fxFlex fxLayoutAlign="center center">
 				<mat-spinner></mat-spinner>
-			</mat-card>
+			</div>
+		</ng-template>
+		<ng-template #noSettings>
+			<div fxFlex fxLayout="column" fxLayoutAlign="center center" class="no-users">
+				<span>It seems <strong>@materia/users</strong> addon is not configured yet</span>
+				<div>
+					<button (click)="openSetup.emit()" mat-raised-button color="primary" [style.margin]="'15px'" [style.color]="'white'">
+						Fill settings
+					</button>
+				</div>
+			</div>
 		</ng-template>
 		<div style="margin: 8px;" *ngIf="displayEmailSettings" fxLayout="column" fxFlex>
 			<mat-toolbar fxLayout="row" fxLayoutAlign="start center">

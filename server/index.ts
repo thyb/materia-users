@@ -1,3 +1,5 @@
+import { App } from '@materia/server';
+
 import { TokenAuth } from './auth/token';
 import { SessionAuth } from './auth/session';
 import { Auth } from './auth/auth';
@@ -25,7 +27,7 @@ export default class UserManagementAddon {
 
   auth: Auth;
 
-  constructor(private app: any, private config: any, private express: any) {}
+  constructor(private app: App, private config: any) {}
 
   afterLoadEntities() {
     if (this.app.database.disabled) {

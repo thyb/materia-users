@@ -7,6 +7,7 @@ import { Strategy as BearerStrategy } from 'passport-http-bearer';
 import { Auth } from './auth';
 
 export class TokenAuth extends Auth {
+
   constructor(app: any, config: any) {
     super(app, config);
     this.app.usersOAuthServer = oauth2orize.createServer();

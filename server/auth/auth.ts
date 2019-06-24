@@ -1,8 +1,8 @@
-import * as uuid from 'uuid/v4';
 import * as bcrypt from 'bcryptjs';
 
 export abstract class Auth {
   protected passport: any;
+
   constructor(protected app: any, protected config: any) {
     this.passport = this.app.server.passport;
   }
@@ -50,7 +50,7 @@ export abstract class Auth {
           } else {
             return done(null, false);
           }
-        })
+        });
       })
       .catch(e => {
         return done(null, false);

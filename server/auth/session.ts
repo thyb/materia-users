@@ -2,6 +2,7 @@ import { Auth } from './auth';
 import { Strategy as LocalStrategy } from 'passport-local';
 
 export class SessionAuth extends Auth {
+
   constructor(app: any, config: any) {
     super(app, config);
     this.passport.use(

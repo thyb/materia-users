@@ -6,12 +6,13 @@ import {
   EventEmitter,
   ViewChild
 } from '@angular/core';
-import { MatDialog, MatDialogRef, MatSnackBar, PageEvent } from '@angular/material';
+import { MatDialog, MatDialogRef, PageEvent } from '@angular/material';
 import { AddonView } from '@materia/addons';
 import { HttpClient } from '@angular/common/http';
 
-import { SignupFormComponent } from '../signup-form/signup-form.component';
 import { IApp } from '@materia/interfaces';
+
+import { SignupFormComponent } from '../signup-form/signup-form.component';
 import { UserManagementSettings } from '../models/user-setting.model';
 
 export interface User {
@@ -33,6 +34,7 @@ export class UserManagementViewComponent implements OnInit {
   @Input() apiUrl: string;
 
   @Output() openSetup = new EventEmitter<void>();
+  @Output() snackbarSuccess = new EventEmitter<string>();
 
   @ViewChild(SignupFormComponent) signupDialogComp: SignupFormComponent;
 
@@ -47,8 +49,7 @@ export class UserManagementViewComponent implements OnInit {
 
   constructor(
     private dialog: MatDialog,
-    private http: HttpClient,
-    private snackbar: MatSnackBar
+    private http: HttpClient
   ) {}
 
   ngOnInit() {
@@ -125,10 +126,8 @@ export class UserManagementViewComponent implements OnInit {
   saveEmailSettings(settings) {
     this.http
       .post<any>(`${this.baseUrl}/addons/@materia/users/setup`, settings)
-      .subscribe(res => {
-        this.snackbar.open('Settings saved!', null, {
-          duration: 3000
-        });
+      .subscribe(() => {
+        this.snackbarSuccess.emit('Settings saved!');
         this.hideEmailSettings();
         this.settings = settings;
       });

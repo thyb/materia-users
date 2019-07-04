@@ -10,49 +10,37 @@ import { HttpClient } from '@angular/common/http';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { MatExpansionPanel } from '@angular/material';
 
+import { UserManagementSettings } from 'client/models/user-setting.model';
+
 @Component({
   selector: 'materia-user-management-email-settings',
   templateUrl: './email-settings.component.html',
   styleUrls: ['./email-settings.component.scss']
 })
 export class EmailSettingsComponent implements OnInit {
-  @Input()
-  settings: any;
-  @Input()
-  baseUrl: string;
+  @Input() settings: UserManagementSettings;
+  @Input() baseUrl: string;
+
+  @Output() hide = new EventEmitter<void>();
+  @Output() save = new EventEmitter<any>();
+
+  @ViewChild('signupPanel') signupPanel: MatExpansionPanel;
+  @ViewChild('changeEmailPanel') changeEmailPanel: MatExpansionPanel;
+  @ViewChild('lostPasswordPanel') lostPasswordPanel: MatExpansionPanel;
 
   emailForm: FormGroup;
   templates: Array<{ name: string; id: number }>;
 
-  @Output()
-  hide = new EventEmitter<void>();
-  @Output()
-  save = new EventEmitter<any>();
-
-  @ViewChild('signupPanel')
-  signupPanel: MatExpansionPanel;
-  @ViewChild('changeEmailPanel')
-  changeEmailPanel: MatExpansionPanel;
-  @ViewChild('lostPasswordPanel')
-  lostPasswordPanel: MatExpansionPanel;
-
   constructor(private http: HttpClient, private form: FormBuilder) {}
 
-  private getSettingsProperty(property, defaultValue) {
-    return (this.settings && this.settings[property]) || defaultValue;
-  }
   ngOnInit(): void {
     this.emailForm = this.form.group({
       method: [
         this.getSettingsProperty('method', 'session'),
         Validators.required
       ],
-      static_salt: [
-        this.getSettingsProperty('static_salt', ''),
-        Validators.required
-      ],
       user_profile_enabled: [
-        this.getSettingsProperty('user_profile_enabled', 'false')
+        this.getSettingsProperty('user_profile_enabled', false)
       ],
       user_profile_entity: [
         this.getSettingsProperty('user_profile_entity', '')
@@ -109,12 +97,18 @@ export class EmailSettingsComponent implements OnInit {
         });
     }
   }
+
   saveEmailSettings() {
     if (this.emailForm.valid) {
       this.save.emit(this.emailForm.value);
     }
   }
+
   cancel() {
     this.hide.emit();
+  }
+
+  private getSettingsProperty(property, defaultValue) {
+    return (this.settings && this.settings[property]) || defaultValue;
   }
 }

@@ -77,7 +77,7 @@ export class EmailSettingsComponent implements OnInit {
         .post<any>(`${this.baseUrl}/entities/mailjet_template/queries/list`, {limit: 1000})
         .subscribe(data => {
           this.templates = data.data
-            .filter(row => row.OwnerId !== 1)
+            .filter(row => row.OwnerId !== 0)
             .map(row => {
               return {
                 name: row.Name,

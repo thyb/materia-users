@@ -114,9 +114,11 @@ export class UserManagementViewComponent implements OnInit {
   configureEmails() {
     this.displayEmailSettings = true;
   }
+
   hideEmailSettings() {
     this.displayEmailSettings = false;
   }
+
   openSignupDialog() {
     this.signupDialog = this.dialog.open(this.signupDialogComp.template, {
       panelClass: 'no-padding'

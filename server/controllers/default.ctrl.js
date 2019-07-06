@@ -2,10 +2,14 @@ const bcrypt = require('bcryptjs');
 const uuid = require('uuid/v4');
 
 class DefaultCtrl {
+
+  get config() {
+    return this.app.addons.addonsConfig && this.app.addons.addonsConfig['@materia/users'];
+  }
+
   constructor(app) {
     this.app = app;
     this.passport = this.app.server.passport;
-    this.config = this.app.addons.addonsConfig['@materia/users'];
   }
 
   me(req, res, next) {

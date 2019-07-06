@@ -4,11 +4,14 @@ const md5 = require('md5');
 const crypto = require('crypto');
 
 class UserModel {
+
+  get config() {
+    return this.app.addons.addonsConfig && this.app.addons.addonsConfig['@materia/users'];
+  }
+
   constructor(app, model) {
     this.app = app;
     this.model = model;
-
-    this.config = this.app.addons.addonsConfig && this.app.addons.addonsConfig['@materia/users'];
   }
 
   listWithGravatar(params) {

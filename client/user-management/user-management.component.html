@@ -21,7 +21,13 @@
 						<div fxFlex fxLayout="column" [style.overflowY]="'auto'">
 							<div fxLayout="row" fxLayoutAlign="start center" *ngFor="let user of users" style="border-bottom: 1px solid #EEE; cursor: pointer;min-height: 40px">
 								<img [src]="user.gravatar" class="avatar" style="margin: 0 8px; width:32px; height:32px;border-radius: 100%" />
-								<div style="color: #999; padding-top: 0">{{user.email}}</div>
+								<div style="color: #999; padding-top: 0" fxFlex>{{user.email}}</div>
+								<div class="verified" *ngIf="settings?.email_verification">
+									<span *ngIf="user.verified; else resendTemplate">verified</span>
+									<ng-template #resendTemplate>
+										<button mat-button (click)="resendVerification(user.id_user)">Resend verification</button>
+									</ng-template>
+								</div>
 							</div>
 						</div>
 						<mat-paginator

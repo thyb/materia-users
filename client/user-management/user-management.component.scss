@@ -1,7 +1,9 @@
 :host {
 	flex: 1 1 0;
 }
-
+::ng-deep.mat-paginator-container {
+	background: #F5F5F5;
+}
 mat-card {
 	margin: 8px;
 	padding: 0px;
@@ -13,6 +15,12 @@ mat-icon {
 .no-users {
 	font-style: italic;
 }
-::ng-deep.mat-paginator-container {
-	background: #F5F5F5;
+.verified {
+	margin: 0 15px;
+	span {
+		color: #4CAF50;
+		font-size: 14px;
+		font-weight: bold;
+		margin: 0 16px;
+	}
 }

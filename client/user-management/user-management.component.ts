@@ -19,6 +19,9 @@ export interface User {
   email: string;
   gravatar: string;
   name: string;
+  verified?: boolean;
+  id_stripe?: string;
+  id_user?: number;
 }
 
 @AddonView('@materia/users')
@@ -154,5 +157,10 @@ export class UserManagementViewComponent implements OnInit {
       },
       () => this.refreshConnectedUser()
     );
+  }
+
+  resendVerification(id) {
+    this.http.post<any>(`${this.baseUrl}/entities/user/queries/sendVerificationEmail`, {id_user: id})
+    .subscribe(() => this.snackbarSuccess.emit('Verification email send'));
   }
 }

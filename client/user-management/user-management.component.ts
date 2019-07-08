@@ -161,6 +161,6 @@ export class UserManagementViewComponent implements OnInit {
 
   resendVerification(id) {
     this.http.post<any>(`${this.baseUrl}/entities/user/queries/sendVerificationEmail`, {id_user: id})
-    .subscribe(() => this.snackbarSuccess.emit('Verification email send'));
+    .subscribe(() => this.snackbarSuccess.emit('Verification email sent!'));
   }
 }

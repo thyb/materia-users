@@ -47,15 +47,11 @@ export default class UserManagementAddon {
     return Promise.resolve();
   }
 
-  beforeLoadQueries() {
-    if (! this.disabled && this.config.user_profile_enabled && this.config.user_profile_entity) {
-      return addUserProfileRelation(this.app, this.config);
-    }
-    return Promise.resolve();
-  }
-
   afterLoadQueries() {
     let promise = Promise.resolve();
+    if (! this.disabled && this.config.user_profile_enabled && this.config.user_profile_entity) {
+      promise = promise.then(() => addUserProfileRelation(this.app, this.config));
+    }
     if (! this.disabled && this.config.user_profile_enabled && this.config.user_profile_entity) {
       promise = promise.then(() => addUserProfileQueries(this.app, this.config));
     }

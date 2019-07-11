@@ -1,4 +1,6 @@
-export function addUserProfileRelation(app, config) {
+import { App } from '@materia/server';
+
+export function addUserProfileRelation(app: App, config) {
   const userEntity = app.entities.get('user');
   const relatedEntities = userEntity.getRelatedEntities();
 

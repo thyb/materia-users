@@ -19,7 +19,7 @@
         "name": "email",
         "type": "text",
         "required": true,
-        "component": "input"
+        "component": "email"
       },
       {
         "name": "password",
@@ -91,12 +91,14 @@
       {
         "name": "new_password",
         "type": "text",
-        "required": true
+        "required": true,
+        "component": "password"
       },
       {
         "name": "old_password",
         "type": "text",
-        "required": true
+        "required": true,
+        "component": "password"
       }
     ]
   },
@@ -110,7 +112,8 @@
       {
         "name": "email",
         "type": "text",
-        "required": "true"
+        "required": true,
+        "component": "email"
       }
     ],
     "permissions": ["Authenticated"]
@@ -125,12 +128,14 @@
       {
         "name": "email",
         "type": "text",
-        "required": "true"
+        "required": true,
+        "component": "email"
       },
       {
         "name": "password",
         "type": "text",
-        "required": "true"
+        "required": true,
+        "component": "password"
       }
     ]
   },
@@ -176,7 +181,8 @@
       {
         "name": "new_password",
         "type": "text",
-        "required": true
+        "required": true,
+        "component": "password"
       },
       {
         "name": "key",

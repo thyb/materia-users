@@ -1,6 +1,6 @@
 import { App } from '@materia/server';
 
-export function addUserProfileRelation(app: App, config) {
+export async function addUserProfileRelation(app: App, config) {
   const userEntity = app.entities.get('user');
   const relatedEntities = userEntity.getRelatedEntities();
 
@@ -18,7 +18,13 @@ export function addUserProfileRelation(app: App, config) {
     const entityProfile = app.entities.get(
       config.user_profile_entity
     );
-    if (entityProfile) {
+    if (entityProfile && userEntity) {
+      if (! entityProfile.model) {
+        await entityProfile.loadModel();
+      }
+      if (! userEntity.model) {
+        await userEntity.loadModel();
+      }
       return entityProfile
         .addRelation(
           {

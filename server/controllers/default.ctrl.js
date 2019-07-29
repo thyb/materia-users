@@ -299,36 +299,30 @@ class DefaultCtrl {
         { raw: true }
       )
       .then(user => {
-        return new Promise((resolve, reject) => {
-          bcrypt.compare(params.old_password, user.password).then(res => {
-            if (res) {
-              bcrypt.hash(params.new_password, 10).then(newHash => {
-                userEntity.getQuery('update')
+          return bcrypt.compare(params.old_password, user.password).then(match => {
+            if (match) {
+              return bcrypt.hash(params.new_password, 10).then(newHash => {
+                return userEntity.getQuery('update')
                   .run({
                     id_user: req.user.id_user,
                     password: newHash,
                     key_password: null
                   })
-                  .then(() => {
-                    res.status(200).json(user);
-                    resolve(user);
-                  });
+                  .then(() => Promise.resolve(user));
               })
             } else {
-              res.status(500).send({
+              return Promise.reject({
                 error: true,
-                message: 'old password does not match'
+                message: 'Old password does not match'
               });
-              reject();
             }
           })
-        })
       })
       .then(user => {
         req.body.email = user.email;
         req.body.password = params.new_password;
         this.signin(req, res, next);
-      });
+      }).catch((err) => res.status(500).send(err));
   }
 
   verifyEmail(req, res, next) {

@@ -20,7 +20,7 @@
     "ng": "ng",
     "start": "ng serve",
     "test": "ng test",
-    "build:prod": "npm run build:client && npm run build:server && npm run postbuild",
+    "build:prod": "npm run build:client && npm run build:server && ncp LICENSE ./dist/LICENSE && ncp README.md ./dist/README.md && npm run postbuild",
     "build:server": "tsc -p ./tsconfig.server.json && ncp ./server/controllers ./dist/server/controllers && ncp ./server/models ./dist/server/models && ncp ./server/api.json ./dist/server/api.json",
     "build:client": "ng build --prod",
     "postbuild": "node scripts/postbuild.js",

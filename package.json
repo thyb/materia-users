@@ -4,6 +4,7 @@
   "description": "Signin/signup your users in your Materia application",
   "author": "team@getmateria.com",
   "license": "MIT",
+  "keywords": ["materia", "authentication", "user-management", "passport"],
   "bugs": {
     "url": "https://github.com/materiahq/materia-users/issues"
   },

@@ -4,7 +4,12 @@
   "description": "Signin/signup your users in your Materia application",
   "author": "team@getmateria.com",
   "license": "MIT",
-  "keywords": ["materia", "authentication", "user-management", "passport"],
+  "keywords": [
+    "materia",
+    "authentication",
+    "user-management",
+    "passport"
+  ],
   "bugs": {
     "url": "https://github.com/materiahq/materia-users/issues"
   },
@@ -75,8 +80,6 @@
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
-    "express-session": "^1.15.6",
-    "flash": "^1.1.0",
     "md5": "^2.2.1",
     "oauth2orize": "^1.11.0",
     "passport": "^0.4.0",

@@ -165,7 +165,8 @@
       {
         "name": "email",
         "type": "text",
-        "required": true
+        "required": true,
+        "component": "email"
       }
     ],
     "query": {

@@ -6,7 +6,8 @@ import {
   EventEmitter,
   ViewChild
 } from '@angular/core';
-import { MatDialog, MatDialogRef, PageEvent } from '@angular/material';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { PageEvent } from '@angular/material/paginator';
 import { AddonView } from '@materia/addons';
 import { HttpClient } from '@angular/common/http';
 

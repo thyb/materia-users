@@ -39,7 +39,7 @@ export class UserManagementViewComponent implements OnInit {
   @Output() openSetup = new EventEmitter<void>();
   @Output() snackbarSuccess = new EventEmitter<string>();
 
-  @ViewChild(SignupFormComponent) signupDialogComp: SignupFormComponent;
+  @ViewChild(SignupFormComponent, { static: true }) signupDialogComp: SignupFormComponent;
 
   loading = true;
   me: any;

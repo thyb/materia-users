@@ -24,9 +24,9 @@ export class EmailSettingsComponent implements OnInit {
   @Output() hide = new EventEmitter<void>();
   @Output() save = new EventEmitter<any>();
 
-  @ViewChild('signupPanel') signupPanel: MatExpansionPanel;
-  @ViewChild('changeEmailPanel') changeEmailPanel: MatExpansionPanel;
-  @ViewChild('lostPasswordPanel') lostPasswordPanel: MatExpansionPanel;
+  @ViewChild('signupPanel', { static: true }) signupPanel: MatExpansionPanel;
+  @ViewChild('changeEmailPanel', { static: true }) changeEmailPanel: MatExpansionPanel;
+  @ViewChild('lostPasswordPanel', { static: true }) lostPasswordPanel: MatExpansionPanel;
 
   emailForm: FormGroup;
   templates: Array<{ name: string; id: number }>;

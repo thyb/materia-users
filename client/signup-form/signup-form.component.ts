@@ -19,7 +19,7 @@ export class SignupFormComponent implements OnInit, OnChanges {
   @Output() signup: EventEmitter<any> = new EventEmitter();
   @Output() cancel: EventEmitter<void> = new EventEmitter();
 
-  @ViewChild('template') template: TemplateRef<any>;
+  @ViewChild('template', { static: true }) template: TemplateRef<any>;
 
   signupForm: FormGroup;
 

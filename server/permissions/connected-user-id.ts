@@ -13,7 +13,7 @@ export function defineConnectedUserIdPermission(app, config) {
             } else {
               req.body.id_user = req.user.id_user;
             }
-            return next()
+            return next();
           } else {
             const e: any = new Error('Unauthorized');
             e.statusCode = 401;

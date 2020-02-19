@@ -68,7 +68,7 @@ import { EmailSettingsComponent } from './emails-settings/email-settings.compone
     SignupFormComponent,
     ParamInputComponent
   ],
-  exports: [UserManagementViewComponent],
+  exports: [UserManagementViewComponent, UserManagementSetupComponent],
   entryComponents: []
 })
 export class UserManagementModule {}

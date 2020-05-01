@@ -3,8 +3,6 @@ import { FormGroup, Validators, FormBuilder } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { AddonSetup } from '@materia/addons';
 import { IApp, IEntity } from '@materia/interfaces';
-import { map, filter, take } from 'rxjs/operators';
-import { ActionsSubject } from '@ngrx/store';
 
 import { UserManagementSettings } from '../models/user-setting.model';
 
@@ -27,7 +25,7 @@ export class UserManagementSetupComponent implements OnInit {
   entities: IEntity[];
   emailAddons = [];
 
-  constructor(private fb: FormBuilder, private http: HttpClient, private dispatcher: ActionsSubject) {}
+  constructor(private fb: FormBuilder, private http: HttpClient) {}
 
   private getSettingsProperty(property, defaultValue) {
     return (this.settings && this.settings[property]) || defaultValue;

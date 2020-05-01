@@ -17,9 +17,9 @@
           },
           "configurations": {
             "production": {
-              "project": "ng-package.prod.json"
-            ,              "tsConfig": "tsconfig.lib.prod.json"
-}
+              "project": "ng-package.prod.json",
+              "tsConfig": "tsconfig.lib.prod.json"
+            }
           }
         },
         "test": {
@@ -45,5 +45,8 @@
       }
     }
   },
-  "defaultProject": "materia-users"
+  "defaultProject": "materia-users",
+  "cli": {
+    "analytics": false
+  }
 }

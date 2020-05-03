@@ -1,6 +1,6 @@
 {
   "name": "@materia/users",
-  "version": "1.1.0",
+  "version": "1.1.2",
   "description": "Signin/signup your users in your Materia application",
   "author": "team@getmateria.com",
   "license": "MIT",

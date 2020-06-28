@@ -18,9 +18,9 @@
 			<h3>
 				<mat-checkbox formControlName="user_profile_enabled">User profile</mat-checkbox>
 			</h3>
-			<mat-form-field *ngIf="entities && entities.length > 0; else noEntities">
+			<mat-form-field *ngIf="entities?.length > 0; else noEntities">
 				<mat-select placeholder="Select the user profile entity" formControlName="user_profile_entity">
-					<mat-option *ngFor="let e of entities" [value]="e.name">{{ e.name }}</mat-option>
+					<mat-option *ngFor="let entity of entities" [value]="entity.name">{{ entity.name }}</mat-option>
 				</mat-select>
 			</mat-form-field>
 			<ng-template #noEntities>
@@ -35,13 +35,12 @@
 
 			<mat-form-field *ngIf="emailAddons && emailAddons.length > 0; else noEmailAddon">
 				<mat-select placeholder="Select your emailing addon" formControlName="email_addon">
-					<mat-option *ngFor="let e of emailAddons" [value]="e.package">{{ e.name }}</mat-option>
+					<mat-option *ngFor="let addon of emailAddons" [value]="addon.package">{{ addon.name }}</mat-option>
 				</mat-select>
 			</mat-form-field>
 
 			<ng-template #noEmailAddon>
 				<div class="warning">You need
-					<strong>Sendgrid</strong> or
 					<strong>Mailjet</strong> addon installed
 					<br>to send email from your Materia Application such as a signup email</div>
 			</ng-template>

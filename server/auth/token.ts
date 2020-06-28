@@ -71,7 +71,7 @@ export class TokenAuth extends Auth {
           done(null, false);
         } else {
           const info = { scope: '*' };
-          done(null, { id_user: token.id_user }, info);
+          done(null, { id_user: token.id_user, token: accessTokenHash  }, info);
         }
       })
       .catch(err => {

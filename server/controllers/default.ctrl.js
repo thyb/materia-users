@@ -23,26 +23,21 @@ class DefaultCtrl {
 
   destroy(req, res, next) {
     let params = Object.assign({}, req.body, req.params, req.query);
-    let valid = false;
-    if (req.user.email == params.email) {
-      valid = true;
-    } else {
+    if (req.user.email !== params.email) {
       return Promise.reject('Confirmation failed');
     }
-    if (valid) {
-      return this.app.entities
-        .get('user')
-        .getQuery('delete')
-        .run({
-          id_user: req.user.id_user
-        })
-        .then(() => {
-          req.logout();
-          return {
-            removed: true
-          };
-        });
-    }
+    return this.app.entities
+      .get('user')
+      .getQuery('delete')
+      .run({
+        id_user: req.user.id_user
+      })
+      .then(() => {
+        req.logout();
+        return {
+          removed: true
+        };
+      });
   }
 
   signin(req, res, next) {
@@ -128,8 +123,15 @@ class DefaultCtrl {
   }
 
   logout(req, res, next) {
-    req.logOut();
-    res.status(200).json({ logout: true });
+    if (this.config && this.config.method == 'token') {
+      const user_token = this.app.entities.get('user_token');
+      return user_token.getQuery('delete')
+        .run({ token: req.user.token })
+        .then(() => res.sendStatus(200));
+    } else {
+      req.logOut();
+      res.sendStatus(200);
+    }
   }
 
   //Params: new_email
